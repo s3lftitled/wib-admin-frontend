@@ -1,52 +1,52 @@
-import React, { useState, useEffect } from 'react';
-import './Dashboard.css';
-import Sidebar from '../../components/Sidebar/Sidebar';
+import React, { useState, useEffect } from 'react'
+import './Dashboard.css'
+import Sidebar from '../../components/Sidebar/Sidebar'
 
 const Dashboard = () => {
-    const [isSidebarActive, setSidebarActive] = useState(false);
-    const [selectedDate, setSelectedDate] = useState(null);
-    const [currentDate, setCurrentDate] = useState(new Date());
+    const [isSidebarActive, setSidebarActive] = useState(false)
+    const [selectedDate, setSelectedDate] = useState(null)
+    const [currentDate, setCurrentDate] = useState(new Date())
 
     const monthNames = [
         'January', 'February', 'March', 'April', 'May', 'June',
         'July', 'August', 'September', 'October', 'November', 'December'
-    ];
+    ]
 
     const toggleSidebar = () => {
-        setSidebarActive(!isSidebarActive);
-    };
+        setSidebarActive(!isSidebarActive)
+    }
     
     const handleKeyDown = (e) => {
         if (e.key === 'Escape' && isSidebarActive) {
-            toggleSidebar();
+            toggleSidebar()
         }
-    };
+    }
 
     const handleMonthChange = (e) => {
-        const newMonth = parseInt(e.target.value);
-        const newDate = new Date(currentDate);
-        newDate.setMonth(newMonth);
-        setCurrentDate(newDate);
-    };
+        const newMonth = parseInt(e.target.value)
+        const newDate = new Date(currentDate)
+        newDate.setMonth(newMonth)
+        setCurrentDate(newDate)
+    }
 
     const handleYearChange = (e) => {
-        const newYear = parseInt(e.target.value);
-        const newDate = new Date(currentDate);
-        newDate.setFullYear(newYear);
-        setCurrentDate(newDate);
-    };
+        const newYear = parseInt(e.target.value)
+        const newDate = new Date(currentDate)
+        newDate.setFullYear(newYear)
+        setCurrentDate(newDate)
+    }
 
     const selectDate = (date) => {
         setSelectedDate(date);
-    };
+    }
 
     const renderCalendar = () => {
-        const year = currentDate.getFullYear();
-        const month = currentDate.getMonth();
+        const year = currentDate.getFullYear()
+        const month = currentDate.getMonth()
 
-        const firstDay = new Date(year, month, 1).getDay();
-        const daysInMonth = new Date(year, month + 1, 0).getDate();
-        const daysInPrevMonth = new Date(year, month, 0).getDate();
+        const firstDay = new Date(year, month, 1).getDay()
+        const daysInMonth = new Date(year, month + 1, 0).getDate()
+        const daysInPrevMonth = new Date(year, month, 0).getDate()
 
         let date = 1;
         let nextMonthDate = 1;
@@ -62,18 +62,18 @@ const Dashboard = () => {
                         <td key={`prev-${prevDate}`} className="day-cell other-month">
                             <div className="day-number">{prevDate}</div>
                         </td>
-                    );
+                    )
                 } else if (date > daysInMonth) {
                     cells.push(
                         <td key={`next-${nextMonthDate}`} className="day-cell other-month">
                             <div className="day-number">{nextMonthDate}</div>
                         </td>
-                    );
-                    nextMonthDate++;
+                    )
+                    nextMonthDate++
                 } else {
-                    const currentDateObj = new Date(year, month, date);
-                    const isToday = isSameDate(currentDateObj, new Date());
-                    const isSelected = selectedDate && isSameDate(currentDateObj, selectedDate);
+                    const currentDateObj = new Date(year, month, date)
+                    const isToday = isSameDate(currentDateObj, new Date())
+                    const isSelected = selectedDate && isSameDate(currentDateObj, selectedDate)
 
                     cells.push(
                         <td
@@ -84,16 +84,16 @@ const Dashboard = () => {
                             <div className="day-number">{date}</div>
                         </td>
                     );
-                    date++;
+                    date++
                 }
             }
 
-            rows.push(<tr key={week}>{cells}</tr>);
+            rows.push(<tr key={week}>{cells}</tr>)
 
             if (date > daysInMonth && nextMonthDate > 7) break;
         }
 
-        return rows;
+        return rows
     };
 
     const isSameDate = (date1, date2) => {
@@ -108,8 +108,8 @@ const Dashboard = () => {
         document.addEventListener('keydown', handleKeyDown);
         return () => {
             document.removeEventListener('keydown', handleKeyDown);
-        };
-    }, [isSidebarActive]);
+        }
+    }, [isSidebarActive])
 
     return (
         <div className="dashboard">
@@ -131,7 +131,7 @@ const Dashboard = () => {
 
                 <div className="main-content">
                     <div className="logobar">
-                        <img src="public/WIB LOGO.png" className="logo-dashboard" />
+                        <img src="/WIB LOGO.png" className="logo-dashboard" />
                     </div>
 
                     <div className="calendar-container">
@@ -173,7 +173,7 @@ const Dashboard = () => {
                 </div>
             </div>
         </div>
-    );
-};
+    )
+}
 
-export default Dashboard;
+export default Dashboard
