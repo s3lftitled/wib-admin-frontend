@@ -1,20 +1,20 @@
-import { useEffect, useState } from 'react';
-import './Sidebar.css';
+import { useEffect, useState } from 'react'
+import './Sidebar.css'
 
 const Settings = ({ isSidebarActive, toggleSidebar })  => {
 
     // Sidebar state and toggle function
-    const [searchTerm, setSearchTerm] = useState('');
+    const [searchTerm, setSearchTerm] = useState('')
 
     const handleOverlayClick = () => {
         if (isSidebarActive) {
             toggleSidebar();
         }
-    };
+    }
 
     const handleKeyDown = (e) => {
         if (e.key === 'Escape' && isSidebarActive) {
-            toggleSidebar();
+            toggleSidebar()
         }
     };
 
@@ -58,12 +58,12 @@ const Settings = ({ isSidebarActive, toggleSidebar })  => {
 
             <div className="main-content">
                 <div className="logobar">
-                    <img src="public/WIB LOGO.png" className="logo-dashboard" />
+                    <img src="/WIB LOGO.png" className="logo-dashboard" />
                 </div>
             </div>
         </div>
 
-    );
-};
+    )
+}
 
-export default Settings;
+export default Settings
