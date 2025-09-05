@@ -80,7 +80,7 @@
     padding: 15px;
     border: 1px solid #ccc;
     border-radius: 5px;
-    font-size: 16px;
+    font-size: 0.9;
     box-sizing: border-box;
 }
 
@@ -95,9 +95,10 @@
     color: #fff;
     border: none;
     border-radius: 5px;
-    font-size: 18px;
+    font-size: 1rem;
     cursor: pointer;
     transition: background-color 0.3s ease;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .btn-signin:hover {
