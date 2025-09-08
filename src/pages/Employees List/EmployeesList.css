@@ -13,10 +13,7 @@
 /* Employee Section Header */
 .employeesList-header {
     color: #031a07;
-    margin-bottom: 20px;
     letter-spacing: -0.5px; 
-    position: relative;
-    padding-bottom: 12px;
 }
 
 .employeesList-title {
