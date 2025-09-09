@@ -5,15 +5,8 @@
     padding: 20px 25px;
     background-color: #fff;
     border-bottom: 1px solid #e0e0e0;
-    overflow: hidden;
     border-radius: 8px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-}
-
-/* Employee Section Header */
-.employeesList-header {
-    color: #031a07;
-    letter-spacing: -0.5px; 
 }
 
 .employeesList-title {
@@ -27,7 +20,6 @@
     font-size: 0.9rem;
     color: #64748b;
     margin-top: 8px;
-    font-weight: 400;
 }
 
 /* Employee Container */
@@ -36,19 +28,7 @@
     border-radius: 12px;
     padding: 24px;
     border: 1px solid #e2e8f0;
-    position: relative;
-    min-height: 400px;
     margin-top: 20px;
-}
-
-.employee-container::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 1px;
-    background: linear-gradient(90deg, transparent, #cbd5e1, transparent);
 }
 
 .employees-grid {
@@ -88,7 +68,6 @@
     justify-content: center;
     color: white;
     font-weight: 600;
-    font-size: 1rem;
 }
 
 .employee-details h3 {
@@ -129,7 +108,6 @@
     justify-content: space-between;
     align-items: center;
     margin-bottom: 24px;
-    flex-wrap: wrap;
     gap: 16px;
 }
 
@@ -183,7 +161,6 @@
 
 .empty-state h3 {
     margin: 0 0 8px 0;
-    font-size: rem;
     color: #475569;
 }
 
@@ -216,83 +193,76 @@
 
 /* Modal Styles */
 .modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-  animation: fadeIn 0.3s ease;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    animation: fadeIn 0.3s ease;
 }
 
 .modal-content {
-  background: #fff;
-  border-radius: 12px;
-  padding: 35px;
-  max-width: 50%;
-  width: 90%;
-  max-height: 80vh;
-  overflow-y: auto;
-  position: relative;
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
-  animation: slideIn 0.3s ease;
+    background: #fff;
+    border-radius: 12px;
+    padding: 35px;
+    max-width: 50%;
+    width: 90%;
+    max-height: 80vh;
+    overflow-y: auto;
+    position: relative;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+    animation: slideIn 0.3s ease;
 }
 
 .modal-content::after {
-  content: 'Add employee functionality will be implemented here...';
-  color: #648b6e;
-  font-size: 0.9rem;
-  font-style: italic;
-  text-align: center;
-  margin: auto;
-  padding: 40px;
-  background: rgba(68, 92, 43, 0.05);
-  border: 2px dashed rgba(68, 92, 43, 0.2);
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+    content: 'Add employee functionality will be implemented here...';
+    color: #648b6e;
+    font-size: 0.9rem;
+    font-style: italic;
+    text-align: center;
+    margin: auto;
+    padding: 40px;
+    background: rgba(68, 92, 43, 0.05);
+    border: 2px dashed rgba(68, 92, 43, 0.2);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .modal-close {
-  position: absolute;
-  top: 10px;
-  right: 15px;
-  background: none;
-  border: none;
-  font-size: 1.5rem;
-  cursor: pointer;
-  color: #6b7280;
-  transition: color 0.2s ease;
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: #6b7280;
+    transition: color 0.2s ease;
 }
 
 .modal-close:hover {
-  color: #374151;
+    color: #374151;
 }
 
 @keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-
-  to {
-    opacity: 1;
-  }
+    from { opacity: 0; }
+    to { opacity: 1; }
 }
 
 @keyframes slideIn {
-  from {
-    opacity: 0;
-    transform: translateY(-20px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
-
