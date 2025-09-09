@@ -1,45 +1,65 @@
-import { useNavigate } from 'react-router-dom'
-import './Authentication.css'
-import { useState } from 'react'
+import { useNavigate } from 'react-router-dom';
+import './Authentication.css';
+import { useState, useEffect } from 'react';
+import axios from 'axios';
 
 const Authentication = () => {
-  const navigate = useNavigate()
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
-  const [signInError, setSignInError] = useState("")
-  const [isLoading, setIsLoading] = useState(false)
+  const navigate = useNavigate();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [signInError, setSignInError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [timeoutId, setTimeoutId] = useState(null); // State to store the timeout ID
 
   const handleSignIn = async (e) => {
-    e.preventDefault()
-    setIsLoading(true)
-    setSignInError("")
-    
+    e.preventDefault();
+    setIsLoading(true);
+    setSignInError("");
+
     try {
-      const res = await fetch("http://localhost:5000/api/auth/v1/sign-in", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
+      const res = await axios.post("http://localhost:5000/api/auth/v1/sign-in", {
+        email,
+        password,
       })
-      
-      const data = await res.json()
-      
-      if (res.ok) {
-        // Save token if provided
+
+      const data = res.data;
+
+      if (res.status === 200) {
         if (data.token) {
-          localStorage.setItem('authToken', data.token)
+
+          const id = setTimeout(() => {
+            handleSessionTimeout()
+          }, 30 * 60 * 1000)
+          setTimeoutId(id)
         }
         navigate("/dashboard")
       } else {
-        // Handle error response from server
         setSignInError(data.message || "Sign in failed")
       }
     } catch (err) {
-      setSignInError("Network error. Please try again.")
+      if (err.response) {
+        setSignInError(err.response.data.message || "Sign in failed")
+      } else {
+        setSignInError("Network error. Please try again.")
+      }
       console.error("Sign in error:", err)
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
   }
+
+  const handleSessionTimeout = () => {
+    alert("Your session has expired. Please sign in again.")
+    navigate("/authentication")
+  }
+
+  useEffect(() => {
+    return () => {
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+      }
+    }
+  }, [timeoutId]);
 
   return (
     <>
@@ -61,8 +81,8 @@ const Authentication = () => {
           />
           <form className="login-form" onSubmit={handleSignIn}>
             <div className="form-group">
-              <input 
-                type="email" 
+              <input
+                type="email"
                 placeholder="Enter your email acc."
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -71,8 +91,8 @@ const Authentication = () => {
               />
             </div>
             <div className="form-group">
-              <input 
-                type="password" 
+              <input
+                type="password"
                 placeholder="Enter your password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
@@ -81,12 +101,12 @@ const Authentication = () => {
               />
             </div>
             {signInError && (
-              <div className="error-message" style={{color: 'red', marginBottom: '10px'}}>
+              <div className="error-message" style={{ color: 'red', marginBottom: '10px' }}>
                 {signInError}
               </div>
             )}
-            <button 
-              type="submit" 
+            <button
+              type="submit"
               className="btn-signin"
               disabled={isLoading}
             >
@@ -96,7 +116,7 @@ const Authentication = () => {
         </div>
       </div>
     </>
-  )
-}
+  );
+};
 
-export default Authentication
+export default Authentication;

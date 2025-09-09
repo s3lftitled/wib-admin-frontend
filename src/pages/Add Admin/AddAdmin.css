@@ -1,0 +1,277 @@
+/* Main content container */
+.admin-content {
+  padding: 40px;
+  background: #f9fafb;
+  min-height: 100vh;
+  font-family: "Inter", sans-serif;
+}
+
+/* Section container */
+.section {
+  background: #fff;
+  padding: 30px;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  margin-bottom: 30px;
+  margin-top: 55px;
+}
+
+/* Title */
+.main-title {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #445c2b;
+  margin-bottom: 15px;
+  margin-top: 20px;
+}
+
+.section-subtitle {
+  font-size: 1rem;
+  color: #555;
+  margin-bottom: 30px;
+}
+
+/* Flex wrapper for left and right sections */
+.admin-sections {
+  display: flex;
+  gap: 30px;
+  margin-top: 20px;
+}
+
+/* Left section: Add Admin */
+.left-section {
+  flex: 1;
+  border-right: 2px solid #445c2b;
+  padding-right: 20px;
+}
+
+/* Right section */
+.right-section {
+  flex: 1;
+  padding-left: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 30px; /* space between dropdown and current admins */
+}
+
+/* Headings */
+.left-section h2,
+.current-section h2 {
+  font-size: 1.3rem;
+  color: #031a07;
+  margin-bottom: 20px;
+}
+
+/* Form styles */
+.form-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin-bottom: 6px;
+  color: #333;
+}
+
+.form-input {
+  padding: 10px 12px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  outline: none;
+  transition: border 0.2s;
+}
+
+.form-input:focus {
+  border-color: #445c2b;
+  box-shadow: 0 0 0 3px rgba(68, 92, 43, 0.2);
+}
+
+/* Buttons */
+/* Buttons */
+.btn-group {
+  margin-top: 20px;
+  display: flex;
+  justify-content: flex-end; /* moves button to the right */
+}
+
+
+.btn {
+  padding: 0.6rem 1.2rem;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: none;
+}
+
+.btn-secondary {
+  background: #445c2b;
+  color: #fff;
+}
+
+.btn-secondary:hover {
+  background: #354823;
+}
+
+/* Admin List */
+.admin-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.admin-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #f9fafb;
+  padding: 14px 16px;
+  border-radius: 10px;
+  border: 1px solid #e5e7eb;
+}
+
+.admin-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.admin-avatar {
+  width: 40px;
+  height: 40px;
+  background: #445c2b;
+  color: #fff;
+  font-weight: 600;
+  font-size: 0.9rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.admin-details h3 {
+  font-size: 1rem;
+  margin: 0;
+  color: #222;
+}
+
+.admin-details p {
+  font-size: 0.85rem;
+  color: #666;
+  margin: 2px 0 0;
+}
+
+/* Action Buttons */
+.action-btn {
+  padding: 0.5rem 1rem;
+  border-radius: 0.375rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.action-edit {
+  background: #e0f2e9;
+  color: #445c2b;
+}
+
+.action-edit:hover {
+  background: #cce4d4;
+}
+
+.action-delete {
+  background: #f8d7da;
+  color: #a71d2a;
+}
+
+.action-delete:hover {
+  background: #f1b0b7;
+}
+
+/* Pending Invitations Dropdown */
+.pending-section {
+  margin-top: 0;
+}
+
+.dropdown {
+  border-radius: 10px;
+  overflow: hidden;
+  transition: max-height 0.3s ease;
+}
+
+.dropdown-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  padding: 14px;
+  background: #445c2b;
+  color: #fff;
+  font-weight: 600;
+  border-radius: 8px;
+}
+
+.dropdown-header .arrow {
+  font-size: 1rem;
+}
+
+.dropdown-content {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.4s ease;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-top: none;
+  border-radius: 0 0 8px 8px;
+}
+
+.dropdown.open .dropdown-content {
+  max-height: 500px;
+}
+
+/* Invitation Items */
+.invitation-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 16px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.invitation-item:last-child {
+  border-bottom: none;
+}
+
+.invitation-meta {
+  font-size: 0.85rem;
+  color: #777;
+}
+
+.status-badge {
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.status-pending {
+  background: #fff3cd;
+  color: #856404;
+}
+
+.status-sent {
+  background: #d1ecf1;
+  color: #0c5460;
+}
