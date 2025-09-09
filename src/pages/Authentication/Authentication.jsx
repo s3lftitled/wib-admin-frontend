@@ -1,65 +1,18 @@
-import { useNavigate } from 'react-router-dom';
-import './Authentication.css';
-import { useState, useEffect } from 'react';
-import axios from 'axios';
+import { useNavigate } from 'react-router-dom'
+import './Authentication.css'
+import { useState } from 'react'
+import { useSignIn } from '../../hooks/authentication/useAuthMutations'
 
 const Authentication = () => {
-  const navigate = useNavigate();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [signInError, setSignInError] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-  const [timeoutId, setTimeoutId] = useState(null); // State to store the timeout ID
+  const navigate = useNavigate()
+  const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
+  const signInMutation = useSignIn()
 
   const handleSignIn = async (e) => {
-    e.preventDefault();
-    setIsLoading(true);
-    setSignInError("");
-
-    try {
-      const res = await axios.post("http://localhost:5000/api/auth/v1/sign-in", {
-        email,
-        password,
-      })
-
-      const data = res.data;
-
-      if (res.status === 200) {
-        if (data.token) {
-
-          const id = setTimeout(() => {
-            handleSessionTimeout()
-          }, 30 * 60 * 1000)
-          setTimeoutId(id)
-        }
-        navigate("/dashboard")
-      } else {
-        setSignInError(data.message || "Sign in failed")
-      }
-    } catch (err) {
-      if (err.response) {
-        setSignInError(err.response.data.message || "Sign in failed")
-      } else {
-        setSignInError("Network error. Please try again.")
-      }
-      console.error("Sign in error:", err)
-    } finally {
-      setIsLoading(false);
-    }
+    e.preventDefault()
+    signInMutation.mutate({ email, password })
   }
-
-  const handleSessionTimeout = () => {
-    alert("Your session has expired. Please sign in again.")
-    navigate("/authentication")
-  }
-
-  useEffect(() => {
-    return () => {
-      if (timeoutId) {
-        clearTimeout(timeoutId);
-      }
-    }
-  }, [timeoutId]);
 
   return (
     <>
@@ -87,7 +40,7 @@ const Authentication = () => {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                disabled={isLoading}
+                disabled={signInMutation.isPending}
               />
             </div>
             <div className="form-group">
@@ -97,20 +50,20 @@ const Authentication = () => {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
-                disabled={isLoading}
+                disabled={signInMutation.isPending}
               />
             </div>
-            {signInError && (
+            {signInMutation.error && (
               <div className="error-message" style={{ color: 'red', marginBottom: '10px' }}>
-                {signInError}
+                {signInMutation.error.message}
               </div>
             )}
             <button
               type="submit"
               className="btn-signin"
-              disabled={isLoading}
+              disabled={signInMutation.isPending}
             >
-              {isLoading ? "Signing in..." : "Sign in"}
+              {signInMutation.isPending ? "Signing in..." : "Sign in"}
             </button>
           </form>
         </div>

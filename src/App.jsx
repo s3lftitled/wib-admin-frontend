@@ -1,23 +1,37 @@
 import { lazy, Suspense } from "react";
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import './App.css';
+import { AuthProvider } from './context/AuthContext'
+import { UserProfileProvider } from "./context/UserProfileContext"
+import { useApiClientSetup } from './hooks/shared/useApiClient'
 
 const Authentication = lazy(() => import('./pages/Authentication/Authentication'))
 const Dashboard = lazy(() => import('./pages/Dashboard/Dashboard'))
 const EmployeesList = lazy(() => import('./pages/Employees List/EmployeesList'))
 const AddAdmin = lazy(() => import('./pages/Add Admin/AddAdmin'))
   
-function App() {
+function AppContent() {
+  useApiClientSetup() 
   return (
-    <Router>
+    <AuthProvider>
+      <UserProfileProvider>
       <Suspense fallback={<div>Loading...</div>}>
         <Routes>
           <Route path="/authentication" element={<Authentication />}/>
-          <Route path="/Dashboard" element={<Dashboard />}/>
-          <Route path="/EmployeesList" element={<EmployeesList />}/>
-          <Route path="/AddAdmin" element={<AddAdmin />}/>
+          <Route path="/dashboard" element={<Dashboard />}/>
+          <Route path="/employee-list" element={<EmployeesList />}/>
+          <Route path="/add-admin" element={<AddAdmin />}/>
         </Routes>
       </Suspense>
+      </UserProfileProvider>
+    </AuthProvider>
+  )
+}
+
+function App() {
+  return (
+    <Router>
+      <AppContent />
     </Router>
   )
 }

@@ -60,9 +60,9 @@ const Settings = ({ isSidebarActive, toggleSidebar })  => {
       <div id="sidebar" className={`sidebar ${isSidebarActive ? 'active' : ''}`}>
         <div className="sidebar-content">
           <h2>Menu</h2>
-          <a href="/Dashboard" className="menu-item">Dashboard</a>
-          <a href="/EmployeesList" className="menu-item">Employees List</a>
-          <a href="/AddAdmin" className="menu-item">Add Admin</a>
+          <a href="dashboard" className="menu-item">Dashboard</a>
+          <a href="/employee-list" className="menu-item">Employees List</a>
+          <a href="/add-admin" className="menu-item">Add Admin</a>
           <button onClick={handleLogoutClick} className="menu-item logout-btn">Logout</button>
         </div>
       </div>
