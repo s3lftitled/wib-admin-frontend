@@ -8,6 +8,8 @@ const EmployeesList = () => {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [searchTerm, setSearchTerm] = useState('')
   const [statusFilter, setStatusFilter] = useState('all')
+  const [selectedEmployee, setSelectedEmployee] = useState(null)
+  const [isEmployeeModalOpen, setIsEmployeeModalOpen] = useState(false)
 
   const { data, isLoading, error, refetch } = useGetEmployees()
 
@@ -36,6 +38,8 @@ const EmployeesList = () => {
       if (e.key === 'Escape') {
         if (isModalOpen) {
           setIsModalOpen(false)
+        } else if (isEmployeeModalOpen) {
+          closeEmployeeModal()
         } else if (isSidebarActive) {
           setSidebarActive(false)
         }
@@ -44,7 +48,7 @@ const EmployeesList = () => {
 
     document.addEventListener('keydown', handleEscape)
     return () => document.removeEventListener('keydown', handleEscape)
-  }, [isSidebarActive, isModalOpen])
+  }, [isSidebarActive, isModalOpen, isEmployeeModalOpen])
 
   const getInitials = (name) => {
     if (!name) return '?'
@@ -66,6 +70,22 @@ const EmployeesList = () => {
   const handleModalOverlayClick = (e) => {
     if (e.target === e.currentTarget) {
       closeModal()
+    }
+  }
+
+  const handleEmployeeClick = (employee) => {
+    setSelectedEmployee(employee)
+    setIsEmployeeModalOpen(true)
+  }
+
+  const closeEmployeeModal = () => {
+    setIsEmployeeModalOpen(false)
+    setSelectedEmployee(null)
+  }
+
+  const handleEmployeeModalOverlayClick = (e) => {
+    if (e.target === e.currentTarget) {
+      closeEmployeeModal()
     }
   }
 
@@ -146,7 +166,7 @@ const EmployeesList = () => {
           ) : (
             <div className="employees-grid">
               {filteredEmployees.map((employee) => (
-                <div key={employee?.id || Math.random()} className="employee-card">
+                <div key={employee?.id || Math.random()} className="employee-card" onClick={() => handleEmployeeClick(employee)} tabIndex={0} role="button" aria-pressed="false" aria-label={`View details for ${employee?.name || 'employee'}`}>
                   <div className="employee-info">
                     <div className="employee-avatar">
                       {getInitials(employee?.name)}
@@ -169,16 +189,16 @@ const EmployeesList = () => {
       </div>
 
       {isModalOpen && (
-        <div 
-          className="modal-overlay" 
+        <div
+          className="modal-overlay"
           onClick={handleModalOverlayClick}
           role="dialog"
           aria-modal="true"
           aria-labelledby="modal-title"
         >
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <button 
-              className="modal-close" 
+            <button
+              className="modal-close"
               onClick={closeModal}
               aria-label="Close modal"
             >
@@ -186,6 +206,54 @@ const EmployeesList = () => {
             </button>
             <h2 id="modal-title">Add New Employee</h2>
             {/* Modal content will be added here */}
+          </div>
+        </div>
+      )}
+
+      {isEmployeeModalOpen && selectedEmployee && (
+        <div
+          className="modal-overlay"
+          onClick={handleEmployeeModalOverlayClick}
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="employee-modal-title"
+        >
+          <div className="modal-content-card" onClick={(e) => e.stopPropagation()}>
+            <button
+              className="modal-close"
+              onClick={closeEmployeeModal}
+              aria-label="Close employee modal"
+            >
+              ×
+            </button>
+            <h2 id="employee-modal-title">Employee Details</h2>
+            <div className="employee-details-modal">
+              <div className="detail-row">
+                <strong>Name:</strong> {selectedEmployee.name || 'N/A'}
+              </div>
+              <div className="detail-row">
+                <strong>Email:</strong> {selectedEmployee.email || 'N/A'}
+              </div>
+              <div className="detail-row">
+                <strong>Department:</strong> {selectedEmployee.department || 'N/A'}
+              </div>
+              <div className="detail-row">
+                <strong>Position:</strong> {selectedEmployee.position || 'N/A'}
+              </div>
+              {selectedEmployee.department && (
+                <div className="detail-row">
+                  <strong>Department:</strong> {selectedEmployee.department}
+                </div>
+              )}
+              {selectedEmployee.position && (
+                <div className="detail-row">
+                  <strong>Position:</strong> {selectedEmployee.position}
+                </div>
+              )}
+              <div className="detail-row">
+                <strong>Status:</strong> <span className={selectedEmployee.isActive ? 'status-active' : 'status-inactive'}>{selectedEmployee.isActive ? 'Active' : 'Inactive'}</span>
+              </div>
+            </div>
           </div>
         </div>
       )}
