@@ -2,7 +2,7 @@ import { Navigate, Outlet } from 'react-router-dom'
 import useAuth from "../hooks/shared/useAuth"
 import useUserProfile from '../hooks/user/useUserProfile'
 
-const ProtectedRoute = () => {
+const ProtectedRoute = ({ allowedRoles }) => {
   const { auth } = useAuth()
   const { userProfile } = useUserProfile()
 
