@@ -12,7 +12,7 @@ export const useSignIn = () => {
     'post',
     ({ email, password }) => ({
       endpoint: 'api/auth/v1/sign-in', 
-      data: { email, password }
+      data: { email, password, logInType: 'admin' }
     }),
     {
       onSuccess: (data) => {
