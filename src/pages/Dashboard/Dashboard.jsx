@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import './Dashboard.css'
 import Sidebar from '../../components/Sidebar/Sidebar'
+import useUserProfile from '../../hooks/user/useUserProfile'
 
 const Dashboard = () => {
   const [isSidebarActive, setSidebarActive] = useState(false)
@@ -8,6 +9,7 @@ const Dashboard = () => {
   const [currentDate, setCurrentDate] = useState(new Date())
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [isWelcomeVisible, setIsWelcomeVisible] = useState(true)
+  const { userProfile } = useUserProfile()
 
   const monthNames = [
     'January', 'February', 'March', 'April', 'May', 'June',
@@ -59,9 +61,9 @@ const Dashboard = () => {
     const daysInMonth = new Date(year, month + 1, 0).getDate()
     const daysInPrevMonth = new Date(year, month, 0).getDate()
 
-    let date = 1;
-    let nextMonthDate = 1;
-    const rows = [];
+    let date = 1
+    let nextMonthDate = 1
+    const rows = []
 
     for (let week = 0; week < 6; week++) {
       const cells = [];
@@ -94,39 +96,39 @@ const Dashboard = () => {
             >
               <div className="day-number">{date}</div>
             </td>
-          );
+          )
           date++
         }
       }
 
       rows.push(<tr key={week}>{cells}</tr>)
 
-      if (date > daysInMonth && nextMonthDate > 7) break;
+      if (date > daysInMonth && nextMonthDate > 7) break
     }
 
     return rows
-  };
+  }
 
   const isSameDate = (date1, date2) => {
     return (
       date1.getFullYear() === date2.getFullYear() &&
       date1.getMonth() === date2.getMonth() &&
       date1.getDate() === date2.getDate()
-    );
-  };
+    )
+  }
 
   useEffect(() => {
-    document.addEventListener('keydown', handleKeyDown);
+    document.addEventListener('keydown', handleKeyDown)
     return () => {
-      document.removeEventListener('keydown', handleKeyDown);
+      document.removeEventListener('keydown', handleKeyDown)
     }
   }, [isSidebarActive])
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      setIsWelcomeVisible(false);
+      setIsWelcomeVisible(false)
     }, 20000);
-    return () => clearTimeout(timer);
+    return () => clearTimeout(timer)
   }, [])
 
   return (
@@ -141,7 +143,7 @@ const Dashboard = () => {
           <div className="welcome-section">
             <button className="welcome-close" onClick={closeWelcome}>×</button>
             <div className="welcome-header">
-              <h1>Welcome Back, [Admin Name!]</h1>
+              <h1>Welcome Back, {userProfile.name}</h1>
               <p>
                 Your dashboard is the central hub for managing your account and your employee.
                 Here you can track their progress, view important notifications, and access key features.
