@@ -51,7 +51,7 @@ const AddAdmin = () => {
 
           {/* Flex wrapper */}
           <div className="admin-sections">
-            
+
             {/* Left: Add Admin Form */}
             <div className="left-section">
               <h2>Add New Administrator</h2>
@@ -93,7 +93,7 @@ const AddAdmin = () => {
 
             {/* Right: Pending + Current */}
             <div className="right-section">
-              
+
               {/* Pending Invitations Dropdown */}
               <div className="pending-section">
                 <div className={`dropdown ${dropdownOpen ? 'open' : ''}`}>
@@ -140,9 +140,7 @@ const AddAdmin = () => {
                   ))}
                 </div>
               </div>
-
             </div>
-
           </div>
         </div>
       </div>
