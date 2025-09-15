@@ -1,10 +1,12 @@
 import { useEffect, useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
 import './Sidebar.css'
 
 const Settings = ({ isSidebarActive, toggleSidebar })  => {
 
   const [searchTerm, setSearchTerm] = useState('')
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false)
+  const navigate = useNavigate()
 
   const handleOverlayClick = () => {
     if (isSidebarActive) {
@@ -24,7 +26,7 @@ const Settings = ({ isSidebarActive, toggleSidebar })  => {
 
   const handleConfirmLogout = () => {
     setIsLogoutModalOpen(false)
-    window.location.href = '/authentication'
+    navigate('/authentication')
   }
 
   const handleCancelLogout = () => {
@@ -60,9 +62,9 @@ const Settings = ({ isSidebarActive, toggleSidebar })  => {
       <div id="sidebar" className={`sidebar ${isSidebarActive ? 'active' : ''}`}>
         <div className="sidebar-content">
           <h2>Menu</h2>
-          <a href="dashboard" className="menu-item">Dashboard</a>
-          <a href="/employee-list" className="menu-item">Employees List</a>
-          <a href="/add-admin" className="menu-item">Add Admin</a>
+          <Link to="/dashboard" className="menu-item">Dashboard</Link>
+          <Link to="/employee-list" className="menu-item">Employees List</Link>
+          <Link to="/add-admin" className="menu-item">Add Admin</Link>
           <button onClick={handleLogoutClick} className="menu-item logout-btn">Logout</button>
         </div>
       </div>
