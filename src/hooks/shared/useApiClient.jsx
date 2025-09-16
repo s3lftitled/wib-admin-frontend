@@ -1,5 +1,4 @@
-import React from 'react'
-import axios from 'axios'
+import { useState, useEffect } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
 import { useNavigate } from 'react-router-dom'
 import { apiClient } from '../../utils/apiClient'
@@ -9,37 +8,70 @@ export const useApiClientSetup = () => {
   const { auth, setAuth } = useAuth()
   const queryClient = useQueryClient()
   const navigate = useNavigate()
+  const [isInitialized, setIsInitialized] = useState(false)
 
-  React.useEffect(() => {
+  const refreshTokenFunction = async () => {
+    try {
+      const response = await apiClient.post('/api/token/refresh', {}, {
+        withCredentials: true,
+      })
+
+      const newToken = response.accessToken
+
+      setAuth((prev) => ({
+        ...prev,
+        accessToken: newToken,
+      }))
+
+      return newToken
+    } catch (error) {
+      console.error('Token refresh failed:', error)
+      throw error
+    }
+  }
+
+  const onAuthFailure = (error) => {
+    console.error('Authentication failed:', error)
+    setAuth(null)
+    queryClient.clear()
+    navigate('/authentication')
+  }
+
+  // Initialize apiClient on mount and when auth changes
+  useEffect(() => {
     apiClient.configure({
       getToken: () => auth?.accessToken,
-
-      refreshToken: async () => {
-        const response = await axios.post('/token/api/refresh', {}, {
-          withCredentials: true,
-        })
-
-        if (!response.ok) {
-          throw new Error('Token refresh failed')
-        }
-
-        const data = await response.json()
-        const newToken = data.newAccessToken
-
-        setAuth((prev) => ({
-          ...prev,
-          accessToken: newToken,
-        }))
-
-        return newToken
-      },
-
-      onAuthFailure: (error) => {
-        console.error('Authentication failed:', error)
-        setAuth(null)
-        queryClient.clear()
-        navigate('/login')
-      },
+      refreshToken: refreshTokenFunction,
+      onAuthFailure,
     })
-  }, [auth, setAuth, queryClient, navigate])
+
+    // Auto-refresh logic similar to PersistLogin
+    const initializeAuth = async () => {
+      try {
+        // If no access token, try to refresh
+        if (!auth?.accessToken) {
+          console.log('No access token found, attempting refresh...')
+          await refreshTokenFunction()
+        }
+      } catch (error) {
+        console.error('Initial token refresh failed:', error)
+        onAuthFailure(error)
+      } finally {
+        setIsInitialized(true)
+      }
+    }
+
+    // Only run initialization once on mount
+    if (!isInitialized) {
+      initializeAuth()
+    } else {
+      // If already initialized and auth changes, just reconfigure
+      setIsInitialized(true)
+    }
+  }, [auth?.accessToken]) // Only depend on accessToken to avoid infinite loops
+
+  return {
+    isInitialized,
+    apiClient
+  }
 }
