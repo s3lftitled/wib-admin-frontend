@@ -158,8 +158,6 @@ const Dashboard = () => {
       }
 
       rows.push(<tr key={week}>{cells}</tr>)
-
-      if (date > daysInMonth && nextMonthDate > 7) break
     }
 
     return rows
