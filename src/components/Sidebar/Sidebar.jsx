@@ -64,6 +64,7 @@ const Settings = ({ isSidebarActive, toggleSidebar })  => {
           <h2>Menu</h2>
           <Link to="/dashboard" className="menu-item">Dashboard</Link>
           <Link to="/employee-list" className="menu-item">Employees List</Link>
+          <Link to="/department" className="menu-item">Department</Link>
           <Link to="/add-admin" className="menu-item">Add Admin</Link>
           <button onClick={handleLogoutClick} className="menu-item logout-btn">Logout</button>
         </div>

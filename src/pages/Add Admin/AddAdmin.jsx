@@ -44,8 +44,8 @@ const AddAdmin = () => {
 
       <div className="admin-content">
         <div className="section add-admin-section">
-          <h1 className="main-title">Admin Management</h1>
-          <p className="section-subtitle">
+          <h1 className="main-title-admin">Admin Management</h1>
+          <p className="section-subtitle-admin">
             Manage administrators, send invitations, and review current access.
           </p>
 
@@ -53,16 +53,16 @@ const AddAdmin = () => {
           <div className="admin-sections">
 
             {/* Left: Add Admin Form */}
-            <div className="left-section">
+            <div className="left-section-admin">
               <h2>Add New Administrator</h2>
-              <div className="form-grid">
-                <div className="form-group">
-                  <label className="form-label" htmlFor="fullName">Full Name</label>
+              <div className="form-grid-admin">
+                <div className="form-group-admin">
+                  <label className="form-label-admin" htmlFor="fullName">Full Name</label>
                   <input
                     id="fullName"
                     type="text"
                     name="fullName"
-                    className="form-input"
+                    className="form-input-admin"
                     placeholder="Enter full name"
                     value={formData.fullName}
                     onChange={handleInputChange}
@@ -70,13 +70,13 @@ const AddAdmin = () => {
                   />
                 </div>
 
-                <div className="form-group">
-                  <label className="form-label" htmlFor="email">Email Address</label>
+                <div className="form-group-admin">
+                  <label className="form-label-admin" htmlFor="email">Email Address</label>
                   <input
                     id="email"
                     type="email"
                     name="email"
-                    className="form-input"
+                    className="form-input-admin"
                     placeholder="Enter email address"
                     value={formData.email}
                     onChange={handleInputChange}
@@ -84,15 +84,15 @@ const AddAdmin = () => {
                   />
                 </div>
               </div>
-              <div className="btn-group">
-                <button className="btn btn-secondary">
+              <div className="btn-group-admin">
+                <button className="btn-admin btn-secondary-admin">
                   Send Invitation
                 </button>
               </div>
             </div>
 
             {/* Right: Pending + Current */}
-            <div className="right-section">
+            <div className="right-section-admin">
 
               {/* Pending Invitations Dropdown */}
               <div className="pending-section">
@@ -120,9 +120,9 @@ const AddAdmin = () => {
               </div>
 
               {/* Current Admins (always visible) */}
-              <div className="current-section">
+              <div className="current-section-admin">
                 <h2>Current Administrators</h2>
-                <div className="admin-list">
+                <div className="department-list">
                   {admins.map(admin => (
                     <div key={admin.id} className="admin-item">
                       <div className="admin-info">
@@ -133,8 +133,8 @@ const AddAdmin = () => {
                         </div>
                       </div>
                       <div className="admin-actions">
-                        <button className="action-btn action-edit">Edit</button>
-                        <button className="action-btn action-delete">Remove</button>
+                        <button className="action-btn-admin action-edit-admin">Edit</button>
+                        <button className="action-btn-admin action-delete-admin">Remove</button>
                       </div>
                     </div>
                   ))}

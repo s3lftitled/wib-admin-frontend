@@ -33,7 +33,7 @@ const Authentication = () => {
             className="logo-small"
           />
           <form className="login-form" onSubmit={handleSignIn}>
-            <div className="form-group">
+            <div className="form-group-authentication">
               <input
                 type="email"
                 placeholder="Enter your email acc."
@@ -43,7 +43,7 @@ const Authentication = () => {
                 disabled={signInMutation.isPending}
               />
             </div>
-            <div className="form-group">
+            <div className="form-group-authentication">
               <input
                 type="password"
                 placeholder="Enter your password"

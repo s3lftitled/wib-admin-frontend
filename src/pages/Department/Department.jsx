@@ -106,40 +106,40 @@ const Department = () => {
         <Sidebar isSidebarActive={isSidebarActive} toggleSidebar={toggleSidebar} />
         <div className={`overlay ${isSidebarActive ? 'active' : ''}`} onClick={handleOverlayClick}></div>
 
-        <div className="admin-content">
-          <div className="section add-admin-section">
+        <div className="department-content">
+          <div className="section-department add-admin-section">
             <button
-              className="btn btn-secondary"
+              className="btn-department btn-secondary-depaxrtment"
               onClick={handleBackToDepartments}
               style={{ marginBottom: '20px' }}
             > ← Back to Departments </button>
 
-            <h1 className="main-title">
-              <span className="green-underline">{selectedDepartment.name}</span> Employees
+            <h1 className="main-title-department">
+              <span className="green-underline-department">{selectedDepartment.name}</span> Employees
             </h1>
-            <p className="section-subtitle">
+            <p className="section-subtitle-department">
               Employees in the {selectedDepartment.name} department.
             </p>
 
-            <div className="employee-container">
+            <div className="department-container">
               {selectedDepartment.employees.length > 0 ? (
-                <div className="employees-grid">
+                <div className="department-grid">
                   {selectedDepartment.employees.map(employee => (
-                    <div key={employee.id} className="employee-card">
-                      <div className="employee-info">
-                        <div className="employee-avatar">{employee.avatar}</div>
-                        <div className="employee-details">
+                    <div key={employee.id} className="department-card">
+                      <div className="employee-info-department">
+                        <div className="employee-avatar-department">{employee.avatar}</div>
+                        <div className="employee-details-department">
                           <h3>{employee.fullName}</h3>
                           <p>{employee.position}</p>
                           <p>{employee.email}</p>
                         </div>
                       </div>
-                      <div className="employee-status status-active">Active</div>
+                      <div className="employee-status-department status-active-department">Active</div>
                     </div>
                   ))}
                 </div>
               ) : (
-                <div className="empty-state">
+                <div className="empty-state-department">
                   <h3>No employees in this department yet.</h3>
                 </div>
               )}
@@ -156,28 +156,28 @@ const Department = () => {
       <Sidebar isSidebarActive={isSidebarActive} toggleSidebar={toggleSidebar} />
       <div className={`overlay ${isSidebarActive ? 'active' : ''}`} onClick={handleOverlayClick}></div>
 
-      <div className="admin-content">
-        <div className="section add-admin-section">
-          <h1 className="main-title">
-            <span className="green-underline">Department</span> Management
+      <div className="admin-content-department">
+        <div className="section-department add-admin-section">
+          <h1 className="main-title-department">
+            <span className="green-underline-department">Department</span> Management
           </h1>
-          <p className="section-subtitle">
+          <p className="section-subtitle-department">
             Create and manage departments, assign department heads, and track organizational structure.
           </p>
 
-          <div className="admin-sections">
+          <div className="department-sections">
             {/* Left Section - Create Department */}
-            <div className="left-section">
+            <div className="left-section-department">
               <h2>Create New Department</h2>
               <form onSubmit={handleCreateDepartment}>
-                <div className="form-grid">
-                  <div className="form-group">
-                    <label className="form-label" htmlFor="departmentName">Department Name</label>
+                <div className="form-grid-department">
+                  <div className="form-group-department">
+                    <label className="form-label-department" htmlFor="departmentName">Department Name</label>
                     <input
                       id="departmentName"
                       type="text"
                       name="departmentName"
-                      className="form-input"
+                      className="form-input-department"
                       placeholder="Enter department name"
                       value={formData.departmentName}
                       onChange={handleInputChange}
@@ -185,38 +185,38 @@ const Department = () => {
                     />
                   </div>
                 </div>
-                <div className="btn-group">
-                  <button type="submit" className="btn btn-secondary"> Create Department </button>
+                <div className="btn-group-department">
+                  <button type="submit" className="btn-department btn-secondary-department"> Create Department </button>
                 </div>
               </form>
             </div>
 
             {/* Right Section - Department List */}
-            <div className="right-section">
-              <div className="current-section">
+            <div className="right-section-department">
+              <div className="current-section-department">
                 <h2>Current Departments</h2>
-                <div className="admin-list">
+                <div className="department-list">
                   {departments.map(department => (
                     <div
                       key={department.id}
-                      className="admin-item"
+                      className="department-item"
                       style={{ cursor: 'pointer' }}
                       onClick={() => handleDepartmentClick(department)}
                     >
-                      <div className="admin-info">
-                        <div className="admin-avatar">{department.avatar}</div>
-                        <div className="admin-details">
+                      <div className="department-info">
+                        <div className="department-avatar">{department.avatar}</div>
+                        <div className="department-details">
                           <h3>{department.name}</h3>
                           <p>Head: {department.headOfDepartment} • {department.employees.length} employees</p>
                         </div>
                       </div>
-                      <div className="admin-actions" onClick={(e) => e.stopPropagation()}>
+                      <div className="department-actions" onClick={(e) => e.stopPropagation()}>
                         <button
-                          className="action-btn action-edit"
+                          className="action-btn-department action-edit"
                           onClick={() => handleEditDepartment(department.id)}
                         > Edit </button>
                         <button
-                          className="action-btn action-delete"
+                          className="action-btn-department action-delete-department"
                           onClick={() => handleDeleteDepartment(department.id)}
                         >  Delete </button>
                       </div>
