@@ -71,11 +71,11 @@
     text-align: center;
 }
 
-.form-group {
+.form-group-authentication {
     margin-bottom: 20px;
 }
 
-.form-group input {
+.form-group-authentication input {
     width: 100%;
     padding: 15px;
     border: 1px solid #ccc;
@@ -84,7 +84,7 @@
     box-sizing: border-box;
 }
 
-.form-group input::placeholder {
+.form-group-authentication input::placeholder {
     color: #999;
 }
 

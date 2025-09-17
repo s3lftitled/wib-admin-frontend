@@ -9,6 +9,17 @@ const Dashboard = () => {
   const [currentDate, setCurrentDate] = useState(new Date())
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [isWelcomeVisible, setIsWelcomeVisible] = useState(true)
+  const [holidays, setHolidays] = useState([
+    { id: 1, date: '2025-01-01', name: 'New Year\'s Day', description: 'New Year celebration' },
+    { id: 2, date: '2025-12-25', name: 'Christmas Day', description: 'Christmas celebration' },
+    { id: 3, date: '2025-07-04', name: 'Independence Day', description: 'National holiday' }
+  ])
+  const [isAddingHoliday, setIsAddingHoliday] = useState(false)
+  const [newHoliday, setNewHoliday] = useState({
+    name: '',
+    description: '',
+    date: ''
+  })
   const { userProfile } = useUserProfile()
 
   const monthNames = [
@@ -47,10 +58,53 @@ const Dashboard = () => {
 
   const closeModal = () => {
     setIsModalOpen(false);
+    setIsAddingHoliday(false);
+    setNewHoliday({ name: '', description: '', date: '' });
   }
 
   const closeWelcome = () => {
     setIsWelcomeVisible(false);
+  }
+
+  const handleAddHoliday = () => {
+    setIsAddingHoliday(true);
+    // Set the selected date as default date for new holiday
+    if (selectedDate) {
+      const dateString = selectedDate.toISOString().split('T')[0];
+      setNewHoliday(prev => ({ ...prev, date: dateString }));
+    }
+  }
+
+  const handleSaveHoliday = () => {
+    if (newHoliday.name && newHoliday.date) {
+      const holiday = {
+        id: Date.now(),
+        name: newHoliday.name,
+        description: newHoliday.description,
+        date: newHoliday.date
+      };
+      setHolidays(prev => [...prev, holiday]);
+      setIsAddingHoliday(false);
+      setNewHoliday({ name: '', description: '', date: '' });
+    }
+  }
+
+  const handleCancelAddHoliday = () => {
+    setIsAddingHoliday(false);
+    setNewHoliday({ name: '', description: '', date: '' });
+  }
+
+  const handleDeleteHoliday = (holidayId) => {
+    setHolidays(prev => prev.filter(holiday => holiday.id !== holidayId));
+  }
+
+  const getHolidaysForDate = (date) => {
+    const dateString = date.toISOString().split('T')[0];
+    return holidays.filter(holiday => holiday.date === dateString);
+  }
+
+  const isHoliday = (date) => {
+    return getHolidaysForDate(date).length > 0;
   }
 
   const renderCalendar = () => {
@@ -87,14 +141,16 @@ const Dashboard = () => {
           const currentDateObj = new Date(year, month, date)
           const isToday = isSameDate(currentDateObj, new Date())
           const isSelected = selectedDate && isSameDate(currentDateObj, selectedDate)
+          const hasHoliday = isHoliday(currentDateObj)
 
           cells.push(
             <td
               key={`current-${date}`}
-              className={`day-cell ${isToday ? 'today' : ''} ${isSelected ? 'selected' : ''}`}
+              className={`day-cell ${isToday ? 'today' : ''} ${isSelected ? 'selected' : ''} ${hasHoliday ? 'holiday' : ''}`}
               onClick={() => selectDate(currentDateObj)}
             >
               <div className="day-number">{date}</div>
+              {hasHoliday && <div className="holiday-indicator">🎉</div>}
             </td>
           )
           date++
@@ -151,13 +207,9 @@ const Dashboard = () => {
             </div>
           </div>
         )}
-        
+
         {/* Main Content */}
         <div className="main-content">
-          <div className="logobar">
-            <img src="/WIB LOGO.png" className="logo-dashboard" />
-          </div>
-
           {/* Calendar Section*/}
           <div className="calendar-container">
             <div className="calendar-header">
@@ -199,10 +251,77 @@ const Dashboard = () => {
       </div>
 
       {isModalOpen && (
-        <div className="modal-overlay" onClick={closeModal}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <button className="modal-close" onClick={closeModal}>×</button>
-            {/* Modal content will be added here */}
+        <div className="modal-overlay-dashboard" onClick={closeModal}>
+          <div className="modal-content-dashboard" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-body">
+              <div className="modal-info">
+                <h3>Date: {selectedDate?.toLocaleDateString()}</h3>
+                <p>Calendar content time in and out of employee functionality will be implemented here...</p>
+              </div>
+              
+              {/* Holiday Management Container */}
+              <div className="holiday-container">
+                <h4>Holidays for this date</h4>
+                <div className="holiday-list">
+                  {getHolidaysForDate(selectedDate || new Date()).length > 0 ? (
+                    getHolidaysForDate(selectedDate || new Date()).map(holiday => (
+                      <div key={holiday.id} className="holiday-item">
+                        <div className="holiday-info">
+                          <h5>{holiday.name}</h5>
+                          <p>{holiday.description}</p>
+                        </div>
+                        <button 
+                          className="delete-holiday-btn"
+                          onClick={() => handleDeleteHoliday(holiday.id)}
+                          title="Delete Holiday"> 🗑️</button>
+                      </div>
+                    ))
+                  ) : (
+                    <p className="no-holidays">No holidays on this date</p>
+                  )}
+                </div>
+
+                {/* Add Holiday Form */}
+                {isAddingHoliday && (
+                  <div className="add-holiday-form">
+                    <h5>Add New Holiday</h5>
+                    <input
+                      type="text"
+                      placeholder="Holiday name"
+                      value={newHoliday.name}
+                      onChange={(e) => setNewHoliday(prev => ({...prev, name: e.target.value}))}
+                      className="holiday-input"
+                    />
+                    <input
+                      type="text"
+                      placeholder="Description (optional)"
+                      value={newHoliday.description}
+                      onChange={(e) => setNewHoliday(prev => ({...prev, description: e.target.value}))}
+                      className="holiday-input"
+                    />
+                    <input
+                      type="date"
+                      value={newHoliday.date}
+                      onChange={(e) => setNewHoliday(prev => ({...prev, date: e.target.value}))}
+                      className="holiday-input"
+                    />
+                    <div className="form-buttons">
+                      <button className="save-btn" onClick={handleSaveHoliday}>Save</button>
+                      <button className="cancel-btn" onClick={handleCancelAddHoliday}>Cancel</button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Add Holiday Button - Bottom Right */}
+            <div className="modal-actions">
+              {!isAddingHoliday && (
+                <button className="add-holiday-btn" onClick={handleAddHoliday}> Add Holiday </button>
+              )}
+            </div>
+
+            <button className="modal-close-dashboard" onClick={closeModal}>×</button>
           </div>
         </div>
       )}
