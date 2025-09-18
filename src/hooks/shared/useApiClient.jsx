@@ -50,11 +50,9 @@ export const useApiClientSetup = () => {
       try {
         // If no access token, try to refresh
         if (!auth?.accessToken) {
-          console.log('No access token found, attempting refresh...')
           await refreshTokenFunction()
         }
       } catch (error) {
-        console.error('Initial token refresh failed:', error)
         onAuthFailure(error)
       } finally {
         setIsInitialized(true)

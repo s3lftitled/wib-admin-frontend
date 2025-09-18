@@ -12,3 +12,16 @@ export const useGetEmployees = (enabled = true) => {
     }
   )
 }
+
+export const useGetLeaveRequests = (enabled = true, page = 1, pageSize = 10) => {
+  return useApiQuery(
+    ['allLeaveRequests', page, pageSize],
+    `/api/admin/v1/fetch-leave-requests?page=${page}&pageSize=${pageSize}`, 
+    {
+      enabled,
+      staleTime: 2 * 60 * 1000,
+      cacheTime: 5 * 60 * 1000, 
+      keepPreviousData: true, 
+    }
+  )
+}
