@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import './Department.css'
 import Sidebar from '../../components/Sidebar/Sidebar'
-import { useCreateDepartment } from '../../hooks/admin/useAdminServices'
+import { useCreateDepartment, useFetchDepartments } from '../../hooks/admin/useAdminServices'
 import useUserProfile from '../../hooks/user/useUserProfile'
 
 const Department = () => {
@@ -14,9 +14,19 @@ const Department = () => {
     departmentName: ''
   })
 
+  const { data: departments, isLoading: isLoadingDepartments, error: fetchDepartmentsError, refetch } = useFetchDepartments()
+
   const handleCreateDepartment = (e) => {
     e.preventDefault()
-    createDepartmentMutation.mutate({ departmentName: formData.departmentName, createdBy: userProfile._id })
+    createDepartmentMutation.mutate(
+      { departmentName: formData.departmentName, createdBy: userProfile._id },
+      {
+        onSuccess: () => {
+          // Refetch departments after successful creation
+          refetch()
+        }
+      }
+    )
   }
 
   // Clear form when mutation is successful
@@ -25,32 +35,6 @@ const Department = () => {
       setFormData({ departmentName: '' })
     }
   }, [createDepartmentMutation.isSuccess])
-
-  // Mock data - API calls dito need lagyan para sa real data
-  const [departments] = useState([
-    {
-      id: 1,
-      name: 'Marketing',
-      headOfDepartment: 'Ronalie Bazar',
-      avatar: 'M',
-      employees: [
-        {
-          id: 101,
-          fullName: ' Dyana Rose Bibat',
-          email: 'dyana.bibat@company.com',
-          position: 'Marketing Specialist',
-          avatar: 'DR'
-        },
-        {
-          id: 102,
-          fullName: 'Frances June Ortiguero',
-          email: 'francesjune.ortiguero@company.com',
-          position: 'Marketing Manager',
-          avatar: 'FJ'
-        }
-      ]
-    }
-  ])
 
   const toggleSidebar = () => setSidebarActive(!isSidebarActive)
   const handleOverlayClick = () => { if (isSidebarActive) toggleSidebar() }
@@ -117,32 +101,37 @@ const Department = () => {
             > ← Back to Departments </button>
 
             <h1 className="main-title-department">
-              <span className="green-underline-department">{selectedDepartment.name}</span> Employees
+              <span className="green-underline-department">{selectedDepartment.name || selectedDepartment.departmentName}</span> Employees
             </h1>
             <p className="section-subtitle-department">
-              Employees in the {selectedDepartment.name} department.
+              Employees in the {selectedDepartment.name || selectedDepartment.departmentName} department.
             </p>
 
             <div className="department-container">
-              {selectedDepartment.employees.length > 0 ? (
+              {selectedDepartment.staffs && selectedDepartment.staffs.length > 0 || selectedDepartment.employees && selectedDepartment.employees.length > 0 ? (
                 <div className="department-grid">
-                  {selectedDepartment.employees.map(employee => (
-                    <div key={employee.id} className="department-card">
+                  {(selectedDepartment.staffs || selectedDepartment.employees || []).map(employee => (
+                    <div key={employee._id || employee.id} className="department-card">
                       <div className="employee-info-department">
-                        <div className="employee-avatar-department">{employee.avatar}</div>
+                        <div className="employee-avatar-department">
+                          {employee.avatar || employee.fullName?.split(' ').map(n => n[0]).join('').slice(0, 2) || 'U'}
+                        </div>
                         <div className="employee-details-department">
-                          <h3>{employee.fullName}</h3>
-                          <p>{employee.position}</p>
-                          <p>{employee.email}</p>
+                          <h3>{employee.fullName || employee.name || 'Unknown Employee'}</h3>
+                          <p>{employee.position || 'No position assigned'}</p>
+                          <p>{employee.email || 'No email provided'}</p>
                         </div>
                       </div>
-                      <div className="employee-status-department status-active-department">Active</div>
+                      <div className="employee-status-department status-active-department">
+                        {employee.status || 'Active'}
+                      </div>
                     </div>
                   ))}
                 </div>
               ) : (
                 <div className="empty-state-department">
                   <h3>No employees in this department yet.</h3>
+                  <p>Add employees to this department to see them here.</p>
                 </div>
               )}
             </div>
@@ -232,34 +221,75 @@ const Department = () => {
             <div className="right-section-department">
               <div className="current-section-department">
                 <h2>Current Departments</h2>
-                <div className="department-list">
-                  {departments.map(department => (
-                    <div
-                      key={department.id}
-                      className="department-item"
-                      style={{ cursor: 'pointer' }}
-                      onClick={() => handleDepartmentClick(department)}
+                
+                {/* Loading State */}
+                {isLoadingDepartments && (
+                  <div className="loading-state-department">
+                    <div className="loading-spinner-large"></div>
+                    <p>Loading departments...</p>
+                  </div>
+                )}
+
+                {/* Error State */}
+                {fetchDepartmentsError && (
+                  <div className="error-state-department">
+                    <div className="error-icon">⚠</div>
+                    <h3>Failed to load departments</h3>
+                    <p>{fetchDepartmentsError?.message || 'Unable to fetch departments. Please try again.'}</p>
+                    <button 
+                      className="btn-department btn-retry" 
+                      onClick={() => refetch()}
                     >
-                      <div className="department-info">
-                        <div className="department-avatar">{department.avatar}</div>
-                        <div className="department-details">
-                          <h3>{department.name}</h3>
-                          <p>Head: {department.headOfDepartment} • {department.employees.length} employees</p>
+                      Retry
+                    </button>
+                  </div>
+                )}
+
+                {/* Department List */}
+                {!isLoadingDepartments && !fetchDepartmentsError && (
+                  <div className="department-list">
+                    {/* Debug log - remove this in production */}
+                    {console.log('Departments data:', departments)}
+                    {departments?.departments && departments.departments.length > 0 ? (
+                      departments.departments.map(department => (
+                        <div
+                          key={department._id || department.id}
+                          className="department-item"
+                          style={{ cursor: 'pointer' }}
+                          onClick={() => handleDepartmentClick(department)}
+                        >
+                          <div className="department-info">
+                            <div className="department-avatar">
+                              {department.name?.charAt(0).toUpperCase() || department.departmentName?.charAt(0).toUpperCase() || 'D'}
+                            </div>
+                            <div className="department-details">
+                              <h3>{department.name || department.departmentName || 'Unknown Department'}</h3>
+                              <p>
+                                {department.headOfDepartment && `Head: ${department.headOfDepartment} • `}
+                                {department.staffs?.length || department.employees?.length || 0} employees
+                              </p>
+                            </div>
+                          </div>
+                          <div className="department-actions" onClick={(e) => e.stopPropagation()}>
+                            <button
+                              className="action-btn-department action-edit"
+                              onClick={() => handleEditDepartment(department._id || department.id)}
+                            > Edit </button>
+                            <button
+                              className="action-btn-department action-delete-department"
+                              onClick={() => handleDeleteDepartment(department._id || department.id)}
+                            >  Delete </button>
+                          </div>
                         </div>
+                      ))
+                    ) : (
+                      <div className="empty-state-department">
+                        <h3>No departments found</h3>
+                        <p>Create your first department to get started.</p>
                       </div>
-                      <div className="department-actions" onClick={(e) => e.stopPropagation()}>
-                        <button
-                          className="action-btn-department action-edit"
-                          onClick={() => handleEditDepartment(department.id)}
-                        > Edit </button>
-                        <button
-                          className="action-btn-department action-delete-department"
-                          onClick={() => handleDeleteDepartment(department.id)}
-                        >  Delete </button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
+                    )}
+                  </div>
+                )}
               </div>
             </div>
           </div>
