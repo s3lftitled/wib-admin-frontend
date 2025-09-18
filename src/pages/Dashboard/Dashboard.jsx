@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import './Dashboard.css'
 import Sidebar from '../../components/Sidebar/Sidebar'
 import useUserProfile from '../../hooks/user/useUserProfile'
+import { useGetLeaveRequests } from '../../hooks/admin/useAdminServices'
 
 const Dashboard = () => {
   const [isSidebarActive, setSidebarActive] = useState(false)
@@ -9,6 +10,11 @@ const Dashboard = () => {
   const [currentDate, setCurrentDate] = useState(new Date())
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [isWelcomeVisible, setIsWelcomeVisible] = useState(true)
+  
+  // Pagination state for leave requests
+  const [currentPage, setCurrentPage] = useState(1)
+  const [pageSize, setPageSize] = useState(10)
+  
   const [holidays, setHolidays] = useState([
     { id: 1, date: '2025-01-01', name: 'New Year\'s Day', description: 'New Year celebration' },
     { id: 2, date: '2025-12-25', name: 'Christmas Day', description: 'Christmas celebration' },
@@ -20,7 +26,11 @@ const Dashboard = () => {
     description: '',
     date: ''
   })
+  
   const { userProfile } = useUserProfile()
+
+  // Fetch leave requests with pagination
+  const { data: leaveRequestsData, isLoading: isLoadingLeaveRequests, error: leaveRequestsError, refetch } = useGetLeaveRequests(true, currentPage, pageSize)
 
   const monthNames = [
     'January', 'February', 'March', 'April', 'May', 'June',
@@ -105,6 +115,42 @@ const Dashboard = () => {
 
   const isHoliday = (date) => {
     return getHolidaysForDate(date).length > 0;
+  }
+
+  // Pagination handlers
+  const handlePageChange = (newPage) => {
+    if (newPage >= 1 && newPage <= (leaveRequestsData?.pagination?.totalPages || 1)) {
+      setCurrentPage(newPage)
+    }
+  }
+
+  const handlePageSizeChange = (e) => {
+    const newPageSize = parseInt(e.target.value)
+    setPageSize(newPageSize)
+    setCurrentPage(1) // Reset to first page when changing page size
+  }
+
+  // Get status badge color
+  const getStatusBadgeClass = (status) => {
+    switch (status?.toLowerCase()) {
+      case 'pending':
+        return 'status-pending'
+      case 'approved':
+        return 'status-approved'
+      case 'rejected':
+        return 'status-rejected'
+      default:
+        return 'status-default'
+    }
+  }
+
+  // Format date for display
+  const formatDate = (dateString) => {
+    return new Date(dateString).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
+    })
   }
 
   const renderCalendar = () => {
@@ -197,7 +243,7 @@ const Dashboard = () => {
           <div className="welcome-section">
             <button className="welcome-close" onClick={closeWelcome}>×</button>
             <div className="welcome-header">
-              <h1>Welcome Back, {userProfile.name}</h1>
+              <h1>Welcome Back, {userProfile?.name}</h1>
               <p>
                 Your dashboard is the central hub for managing your account and your employee.
                 Here you can track their progress, view important notifications, and access key features.
@@ -239,10 +285,113 @@ const Dashboard = () => {
 
           {/* Request Leave Section */}
           <div className="request-leave">
-            <h2 className="request-leave-header">Request Leave</h2>
-            {/* Number of request */}
+            <div className="request-leave-header-container">
+              <h2 className="request-leave-header">Leave Requests</h2>
+              <div className="pagination-controls">
+                <select 
+                  value={pageSize} 
+                  onChange={handlePageSizeChange}
+                  className="page-size-select"
+                >
+                  <option value={5}>5 per page</option>
+                  <option value={10}>10 per page</option>
+                  <option value={20}>20 per page</option>
+                  <option value={50}>50 per page</option>
+                </select>
+              </div>
+            </div>
+            
             <div className="request-leave-container">
-              {/* Content for requesting leave */}
+              {isLoadingLeaveRequests ? (
+                <div className="loading-container">
+                  <p>Loading leave requests...</p>
+                </div>
+              ) : leaveRequestsError ? (
+                <div className="error-container">
+                  <p>Error loading leave requests: {leaveRequestsError.message}</p>
+                  <button onClick={() => refetch()} className="retry-btn">
+                    Retry
+                  </button>
+                </div>
+              ) : leaveRequestsData?.leaves?.length > 0 ? (
+                <>
+                  <div className="leave-requests-list">
+                    {leaveRequestsData.leaves.map((request) => (
+                      <div key={request._id} className="leave-request-item">
+                        <div className="request-info">
+                          <div className="request-header">
+                            <h4>{request.employeeName}</h4>
+                            <span className={`status-badge ${getStatusBadgeClass(request.status)}`}>
+                              {request.status}
+                            </span>
+                          </div>
+                          <div className="request-details">
+                            <p><strong>Email:</strong> {request.employeeEmail}</p>
+                            <p><strong>Type:</strong> {request.leaveType}</p>
+                            <p><strong>Category:</strong> {request.leaveCategory}</p>
+                            <p><strong>From:</strong> {formatDate(request.startDate)}</p>
+                            <p><strong>To:</strong> {formatDate(request.endDate)}</p>
+                            <p><strong>Days:</strong> {request.numberOfDays}</p>
+                            {request.daysApproved && (
+                              <p><strong>Days Approved:</strong> {request.daysApproved}</p>
+                            )}
+                            {request.reason && (
+                              <p><strong>Reason:</strong> {request.reason}</p>
+                            )}
+                            {request.declineReason && (
+                              <p><strong>Decline Reason:</strong> {request.declineReason}</p>
+                            )}
+                            <p><strong>Requested:</strong> {formatDate(request.createdAt)}</p>
+                          </div>
+                        </div>
+                        <div className="request-actions">
+                          {request.status === 'PENDING' && (
+                            <>
+                              <button className="approve-btn">Approve</button>
+                              <button className="reject-btn">Reject</button>
+                            </>
+                          )}
+                          <button className="view-details-btn">View Details</button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  
+                  {/* Pagination */}
+                  {leaveRequestsData.pagination && leaveRequestsData.pagination.totalPages > 1 && (
+                    <div className="pagination">
+                      <button 
+                        onClick={() => handlePageChange(currentPage - 1)}
+                        disabled={currentPage === 1}
+                        className="pagination-btn"
+                      >
+                        Previous
+                      </button>
+                      
+                      <div className="pagination-info">
+                        <span>
+                          Page {leaveRequestsData.pagination.currentPage} of {leaveRequestsData.pagination.totalPages}
+                        </span>
+                        <span className="total-requests">
+                          ({leaveRequestsData.pagination.totalRequests} total requests)
+                        </span>
+                      </div>
+                      
+                      <button 
+                        onClick={() => handlePageChange(currentPage + 1)}
+                        disabled={currentPage === leaveRequestsData.pagination.totalPages}
+                        className="pagination-btn"
+                      >
+                        Next
+                      </button>
+                    </div>
+                  )}
+                </>
+              ) : (
+                <div className="no-requests">
+                  <p>No leave requests found.</p>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -326,5 +475,6 @@ const Dashboard = () => {
     </div>
   )
 }
+
 
 export default Dashboard

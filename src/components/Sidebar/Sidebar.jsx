@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import './Sidebar.css'
 
-const Settings = ({ isSidebarActive, toggleSidebar })  => {
+const Sidebar = ({ isSidebarActive, toggleSidebar })  => {
 
   const [searchTerm, setSearchTerm] = useState('')
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false)
@@ -66,6 +66,7 @@ const Settings = ({ isSidebarActive, toggleSidebar })  => {
           <Link to="/employee-list" className="menu-item">Employees List</Link>
           <Link to="/department" className="menu-item">Department</Link>
           <Link to="/add-admin" className="menu-item">Add Admin</Link>
+          <Link to="/settings" className="menu-item">Settings</Link>
           <button onClick={handleLogoutClick} className="menu-item logout-btn">Logout</button>
         </div>
       </div>
@@ -93,4 +94,4 @@ const Settings = ({ isSidebarActive, toggleSidebar })  => {
   )
 }
 
-export default Settings
+export default Sidebar
