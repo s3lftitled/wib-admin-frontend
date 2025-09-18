@@ -25,3 +25,13 @@ export const useGetLeaveRequests = (enabled = true, page = 1, pageSize = 10) => 
     }
   )
 }
+
+export const useCreateDepartment = (enabled = true) => {
+  return useApiMutation(
+    'post',
+    ({ departmentName, createdBy}) => ({
+      endpoint: `/api/admin/v1/create-new-department/${createdBy}`,
+      data: { departmentName }
+    }),
+  )
+}

@@ -1,14 +1,30 @@
 import { useEffect, useState } from 'react'
 import './Department.css'
 import Sidebar from '../../components/Sidebar/Sidebar'
+import { useCreateDepartment } from '../../hooks/admin/useAdminServices'
+import useUserProfile from '../../hooks/user/useUserProfile'
 
 const Department = () => {
   const [isSidebarActive, setSidebarActive] = useState(false)
   const [selectedDepartment, setSelectedDepartment] = useState(null)
+  const createDepartmentMutation = useCreateDepartment()
+  const { userProfile } = useUserProfile()
 
   const [formData, setFormData] = useState({
     departmentName: ''
   })
+
+  const handleCreateDepartment = (e) => {
+    e.preventDefault()
+    createDepartmentMutation.mutate({ departmentName: formData.departmentName, createdBy: userProfile._id })
+  }
+
+  // Clear form when mutation is successful
+  useEffect(() => {
+    if (createDepartmentMutation.isSuccess) {
+      setFormData({ departmentName: '' })
+    }
+  }, [createDepartmentMutation.isSuccess])
 
   // Mock data - API calls dito need lagyan para sa real data
   const [departments] = useState([
@@ -60,20 +76,6 @@ const Department = () => {
       document.removeEventListener('keydown', handleKeyDown)
     }
   }, [isSidebarActive, selectedDepartment])
-
-  const handleCreateDepartment = async (e) => {
-    e.preventDefault()
-    try {
-      // Lagyan ng API call
-      console.log('Creating department:', formData)
-
-      setFormData({
-        departmentName: ''
-      })
-    } catch (error) {
-      console.error('Error creating department:', error)
-    }
-  }
 
   const handleDepartmentClick = (department) => {
     setSelectedDepartment(department)
@@ -181,12 +183,47 @@ const Department = () => {
                       placeholder="Enter department name"
                       value={formData.departmentName}
                       onChange={handleInputChange}
+                      disabled={createDepartmentMutation.isPending}
                       required
                     />
                   </div>
                 </div>
+
+                {/* Success Message */}
+                {createDepartmentMutation.isSuccess && (
+                  <div className="mutation-message success-message">
+                    <div className="message-icon">✓</div>
+                    <div className="message-content">
+                      <strong>Success!</strong> Department created successfully.
+                    </div>
+                  </div>
+                )}
+
+                {/* Error Message */}
+                {createDepartmentMutation.isError && (
+                  <div className="mutation-message error-message">
+                    <div className="message-icon">⚠</div>
+                    <div className="message-content">
+                      <strong>Error:</strong> {createDepartmentMutation.error?.message || 'Failed to create department. Please try again.'}
+                    </div>
+                  </div>
+                )}
+
                 <div className="btn-group-department">
-                  <button type="submit" className="btn-department btn-secondary-department"> Create Department </button>
+                  <button 
+                    type="submit" 
+                    className={`btn-department btn-secondary-department ${createDepartmentMutation.isPending ? 'btn-loading' : ''}`}
+                    disabled={createDepartmentMutation.isPending}
+                  > 
+                    {createDepartmentMutation.isPending ? (
+                      <>
+                        <span className="loading-spinner"></span>
+                        Creating...
+                      </>
+                    ) : (
+                      'Create Department'
+                    )}
+                  </button>
                 </div>
               </form>
             </div>
