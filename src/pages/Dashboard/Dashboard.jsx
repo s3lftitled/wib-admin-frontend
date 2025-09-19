@@ -11,11 +11,11 @@ const Dashboard = () => {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [selectedLeaveRequest, setSelectedLeaveRequest] = useState(null)
   const [isWelcomeVisible, setIsWelcomeVisible] = useState(true)
-  
+
   // Pagination state for leave requests
   const [currentPage, setCurrentPage] = useState(1)
   const [pageSize, setPageSize] = useState(10)
-  
+
   const [holidays, setHolidays] = useState([
     { id: 1, date: '2025-01-01', name: 'New Year\'s Day', description: 'New Year celebration' },
     { id: 2, date: '2025-12-25', name: 'Christmas Day', description: 'Christmas celebration' },
@@ -27,7 +27,7 @@ const Dashboard = () => {
     description: '',
     date: ''
   })
-  
+
   const { userProfile } = useUserProfile()
 
   // Fetch leave requests with pagination
@@ -296,8 +296,8 @@ const Dashboard = () => {
             <div className="request-leave-header-container">
               <h2 className="request-leave-header">Leave Requests</h2>
               <div className="pagination-controls">
-                <select 
-                  value={pageSize} 
+                <select
+                  value={pageSize}
                   onChange={handlePageSizeChange}
                   className="page-size-select"
                 >
@@ -308,7 +308,7 @@ const Dashboard = () => {
                 </select>
               </div>
             </div>
-            
+
             <div className="request-leave-container">
               {isLoadingLeaveRequests ? (
                 <div className="loading-container">
@@ -325,7 +325,7 @@ const Dashboard = () => {
                 <>
                   <div className="leave-requests-list">
                     {leaveRequestsData.leaves.map((request) => (
-                      <div key={request._id} className="leave-request-item" onClick={() => selectLeaveRequest(request)} style={{cursor: 'pointer'}}>
+                      <div key={request._id} className="leave-request-item" onClick={() => selectLeaveRequest(request)} style={{ cursor: 'pointer' }}>
                         <div className="request-info">
                           <div className="request-header">
                             <h4>{request.employeeName}</h4>
@@ -337,18 +337,18 @@ const Dashboard = () => {
                       </div>
                     ))}
                   </div>
-                  
+
                   {/* Pagination */}
                   {leaveRequestsData.pagination && leaveRequestsData.pagination.totalPages > 1 && (
                     <div className="pagination">
-                      <button 
+                      <button
                         onClick={() => handlePageChange(currentPage - 1)}
                         disabled={currentPage === 1}
                         className="pagination-btn"
                       >
                         Previous
                       </button>
-                      
+
                       <div className="pagination-info">
                         <span>
                           Page {leaveRequestsData.pagination.currentPage} of {leaveRequestsData.pagination.totalPages}
@@ -357,8 +357,8 @@ const Dashboard = () => {
                           ({leaveRequestsData.pagination.totalRequests} total requests)
                         </span>
                       </div>
-                      
-                      <button 
+
+                      <button
                         onClick={() => handlePageChange(currentPage + 1)}
                         disabled={currentPage === leaveRequestsData.pagination.totalPages}
                         className="pagination-btn"
@@ -384,35 +384,94 @@ const Dashboard = () => {
             <div className="modal-body">
               {selectedLeaveRequest ? (
                 <div className="modal-info">
-                  <h3>Leave Request Details</h3>
-                  <div className="request-details">
-                    <p><strong>Employee:</strong> {selectedLeaveRequest.employeeName}</p>
-                    <p><strong>Email:</strong> {selectedLeaveRequest.employeeEmail}</p>
-                    <p><strong>Type:</strong> {selectedLeaveRequest.leaveType}</p>
-                    <p><strong>Category:</strong> {selectedLeaveRequest.leaveCategory}</p>
-                    <p><strong>From:</strong> {formatDate(selectedLeaveRequest.startDate)}</p>
-                    <p><strong>To:</strong> {formatDate(selectedLeaveRequest.endDate)}</p>
-                    <p><strong>Days:</strong> {selectedLeaveRequest.numberOfDays}</p>
-                    {selectedLeaveRequest.daysApproved && (
-                      <p><strong>Days Approved:</strong> {selectedLeaveRequest.daysApproved}</p>
-                    )}
-                    {selectedLeaveRequest.reason && (
-                      <p><strong>Reason:</strong> {selectedLeaveRequest.reason}</p>
-                    )}
-                    {selectedLeaveRequest.declineReason && (
-                      <p><strong>Decline Reason:</strong> {selectedLeaveRequest.declineReason}</p>
-                    )}
-                    <p><strong>Requested:</strong> {formatDate(selectedLeaveRequest.createdAt)}</p>
-                    <p><strong>Status:</strong> <span className={`status-badge ${getStatusBadgeClass(selectedLeaveRequest.status)}`}>{selectedLeaveRequest.status}</span></p>
+                  <div className="request-header-section">
+                    <h3>Leave Request Details</h3>
+                    <span className={`status-badge ${getStatusBadgeClass(selectedLeaveRequest.status)}`}>
+                      {selectedLeaveRequest.status}
+                    </span>
                   </div>
-                  <div className="request-actions">
-                    {selectedLeaveRequest.status === 'PENDING' && (
-                      <>
-                        <button className="approve-btn">Approve</button>
-                        <button className="reject-btn">Reject</button>
-                      </>
-                    )}
+
+                  <div className="request-details-grid">
+                    {/* Employee Information Section */}
+                    <div className="detail-section">
+                      <h4 className="section-title">Employee Information</h4>
+                      <div className="detail-group">
+                        <div className="detail-item">
+                          <span className="detail-label">👤 Employee:</span>
+                          <span className="detail-value">{selectedLeaveRequest.employeeName}</span>
+                        </div>
+                        <div className="detail-item">
+                          <span className="detail-label">📧 Email:</span>
+                          <span className="detail-value">{selectedLeaveRequest.employeeEmail}</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Leave Details Section */}
+                    <div className="detail-section">
+                      <h4 className="section-title">Leave Details</h4>
+                      <div className="detail-group">
+                        <div className="detail-item">
+                          <span className="detail-label">📋 Type:</span>
+                          <span className="detail-value">{selectedLeaveRequest.leaveType}</span>
+                        </div>
+                        <div className="detail-item">
+                          <span className="detail-label">🏷️ Category:</span>
+                          <span className="detail-value">{selectedLeaveRequest.leaveCategory}</span>
+                        </div>
+                        <div className="detail-item">
+                          <span className="detail-label">📅 Duration:</span>
+                          <span className="detail-value">
+                            {formatDate(selectedLeaveRequest.startDate)} - {formatDate(selectedLeaveRequest.endDate)}
+                          </span>
+                        </div>
+                        <div className="detail-item">
+                          <span className="detail-label">⏰ Days Requested:</span>
+                          <span className="detail-value highlight-days">{selectedLeaveRequest.numberOfDays} days</span>
+                        </div>
+                        {selectedLeaveRequest.daysApproved && (
+                          <div className="detail-item">
+                            <span className="detail-label">✅ Days Approved:</span>
+                            <span className="detail-value highlight-approved">{selectedLeaveRequest.daysApproved} days</span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Additional Information Section */}
+                    <div className="detail-section full-width">
+                      <h4 className="section-title">Additional Information</h4>
+                      <div className="detail-group">
+                        {selectedLeaveRequest.reason && (
+                          <div className="detail-item reason-item">
+                            <span className="detail-label">💬 Reason:</span>
+                            <div className="reason-text">{selectedLeaveRequest.reason}</div>
+                          </div>
+                        )}
+                        {selectedLeaveRequest.declineReason && (
+                          <div className="detail-item decline-item">
+                            <span className="detail-label">❌ Decline Reason:</span>
+                            <div className="decline-text">{selectedLeaveRequest.declineReason}</div>
+                          </div>
+                        )}
+                        <div className="detail-item">
+                          <span className="detail-label">📝 Requested On:</span>
+                          <span className="detail-value">{formatDate(selectedLeaveRequest.createdAt)}</span>
+                        </div>
+                      </div>
+                    </div>
                   </div>
+
+                  {selectedLeaveRequest.status === 'PENDING' && (
+                    <div className="request-actions-enhanced">
+                      <button className="approve-btn enhanced-btn">
+                        <span>✓</span> Approve Request
+                      </button>
+                      <button className="reject-btn enhanced-btn">
+                        <span>✕</span> Reject Request
+                      </button>
+                    </div>
+                  )}
                 </div>
               ) : (
                 <>
@@ -451,20 +510,20 @@ const Dashboard = () => {
                           type="text"
                           placeholder="Holiday name"
                           value={newHoliday.name}
-                          onChange={(e) => setNewHoliday(prev => ({...prev, name: e.target.value}))}
+                          onChange={(e) => setNewHoliday(prev => ({ ...prev, name: e.target.value }))}
                           className="holiday-input"
                         />
                         <input
                           type="text"
                           placeholder="Description (optional)"
                           value={newHoliday.description}
-                          onChange={(e) => setNewHoliday(prev => ({...prev, description: e.target.value}))}
+                          onChange={(e) => setNewHoliday(prev => ({ ...prev, description: e.target.value }))}
                           className="holiday-input"
                         />
                         <input
                           type="date"
                           value={newHoliday.date}
-                          onChange={(e) => setNewHoliday(prev => ({...prev, date: e.target.value}))}
+                          onChange={(e) => setNewHoliday(prev => ({ ...prev, date: e.target.value }))}
                           className="holiday-input"
                         />
                         <div className="form-buttons">
