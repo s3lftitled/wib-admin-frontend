@@ -13,6 +13,7 @@ const Dashboard = () => {
   const [selectedDate, setSelectedDate] = useState(null)
   const [currentDate, setCurrentDate] = useState(new Date())
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const [selectedLeaveRequest, setSelectedLeaveRequest] = useState(null)
   const [isWelcomeVisible, setIsWelcomeVisible] = useState(true)
   
   // Pagination state for leave requests
@@ -71,8 +72,15 @@ const Dashboard = () => {
     setIsModalOpen(true);
   }
 
+  const selectLeaveRequest = (request) => {
+    setSelectedLeaveRequest(request);
+    setIsModalOpen(true);
+  }
+
   const closeModal = () => {
     setIsModalOpen(false);
+    setSelectedDate(null);
+    setSelectedLeaveRequest(null);
     setIsAddingHoliday(false);
     setNewHoliday({ name: '', description: '', date: '', type: 'public' });
   }
@@ -361,7 +369,11 @@ const Dashboard = () => {
                 <>
                   <div className="leave-requests-list">
                     {leaveRequestsData.leaves.map((request) => (
+<<<<<<< HEAD
                       <div key={request.id || request._id} className="leave-request-item">
+=======
+                      <div key={request._id} className="leave-request-item" onClick={() => selectLeaveRequest(request)} style={{cursor: 'pointer'}}>
+>>>>>>> 01705af287685bdecd73788a57c2dcffb35b4fa2
                         <div className="request-info">
                           <div className="request-header">
                             <h4>{request.employeeName}</h4>
@@ -369,33 +381,6 @@ const Dashboard = () => {
                               {request.status}
                             </span>
                           </div>
-                          <div className="request-details">
-                            <p><strong>Email:</strong> {request.employeeEmail}</p>
-                            <p><strong>Type:</strong> {request.leaveType}</p>
-                            <p><strong>Category:</strong> {request.leaveCategory}</p>
-                            <p><strong>From:</strong> {formatDate(request.startDate)}</p>
-                            <p><strong>To:</strong> {formatDate(request.endDate)}</p>
-                            <p><strong>Days:</strong> {request.numberOfDays}</p>
-                            {request.daysApproved && (
-                              <p><strong>Days Approved:</strong> {request.daysApproved}</p>
-                            )}
-                            {request.reason && (
-                              <p><strong>Reason:</strong> {request.reason}</p>
-                            )}
-                            {request.declineReason && (
-                              <p><strong>Decline Reason:</strong> {request.declineReason}</p>
-                            )}
-                            <p><strong>Requested:</strong> {formatDate(request.createdAt)}</p>
-                          </div>
-                        </div>
-                        <div className="request-actions">
-                          {request.status === 'PENDING' && (
-                            <>
-                              <button className="approve-btn">Approve</button>
-                              <button className="reject-btn">Reject</button>
-                            </>
-                          )}
-                          <button className="view-details-btn">View Details</button>
                         </div>
                       </div>
                     ))}
@@ -445,6 +430,7 @@ const Dashboard = () => {
         <div className="modal-overlay-dashboard" onClick={closeModal}>
           <div className="modal-content-dashboard" onClick={(e) => e.stopPropagation()}>
             <div className="modal-body">
+<<<<<<< HEAD
               <div className="modal-info">
                 <h3>Date: {selectedDate?.toLocaleDateString()}</h3>
                 <p>Calendar content time in and out of employee functionality will be implemented here...</p>
@@ -536,17 +522,112 @@ const Dashboard = () => {
                         Cancel
                       </button>
                     </div>
+=======
+              {selectedLeaveRequest ? (
+                <div className="modal-info">
+                  <h3>Leave Request Details</h3>
+                  <div className="request-details">
+                    <p><strong>Employee:</strong> {selectedLeaveRequest.employeeName}</p>
+                    <p><strong>Email:</strong> {selectedLeaveRequest.employeeEmail}</p>
+                    <p><strong>Type:</strong> {selectedLeaveRequest.leaveType}</p>
+                    <p><strong>Category:</strong> {selectedLeaveRequest.leaveCategory}</p>
+                    <p><strong>From:</strong> {formatDate(selectedLeaveRequest.startDate)}</p>
+                    <p><strong>To:</strong> {formatDate(selectedLeaveRequest.endDate)}</p>
+                    <p><strong>Days:</strong> {selectedLeaveRequest.numberOfDays}</p>
+                    {selectedLeaveRequest.daysApproved && (
+                      <p><strong>Days Approved:</strong> {selectedLeaveRequest.daysApproved}</p>
+                    )}
+                    {selectedLeaveRequest.reason && (
+                      <p><strong>Reason:</strong> {selectedLeaveRequest.reason}</p>
+                    )}
+                    {selectedLeaveRequest.declineReason && (
+                      <p><strong>Decline Reason:</strong> {selectedLeaveRequest.declineReason}</p>
+                    )}
+                    <p><strong>Requested:</strong> {formatDate(selectedLeaveRequest.createdAt)}</p>
+                    <p><strong>Status:</strong> <span className={`status-badge ${getStatusBadgeClass(selectedLeaveRequest.status)}`}>{selectedLeaveRequest.status}</span></p>
+>>>>>>> 01705af287685bdecd73788a57c2dcffb35b4fa2
                   </div>
-                )}
-              </div>
+                  <div className="request-actions">
+                    {selectedLeaveRequest.status === 'PENDING' && (
+                      <>
+                        <button className="approve-btn">Approve</button>
+                        <button className="reject-btn">Reject</button>
+                      </>
+                    )}
+                  </div>
+                </div>
+              ) : (
+                <>
+                  <div className="modal-info">
+                    <h3>Date: {selectedDate?.toLocaleDateString()}</h3>
+                    <p>Calendar content time in and out of employee functionality will be implemented here...</p>
+                  </div>
+
+                  {/* Holiday Management Container */}
+                  <div className="holiday-container">
+                    <h4>Holidays for this date</h4>
+                    <div className="holiday-list">
+                      {getHolidaysForDate(selectedDate || new Date()).length > 0 ? (
+                        getHolidaysForDate(selectedDate || new Date()).map(holiday => (
+                          <div key={holiday.id} className="holiday-item">
+                            <div className="holiday-info">
+                              <h5>{holiday.name}</h5>
+                              <p>{holiday.description}</p>
+                            </div>
+                            <button
+                              className="delete-holiday-btn"
+                              onClick={() => handleDeleteHoliday(holiday.id)}
+                              title="Delete Holiday"> 🗑️</button>
+                          </div>
+                        ))
+                      ) : (
+                        <p className="no-holidays">No holidays on this date</p>
+                      )}
+                    </div>
+
+                    {/* Add Holiday Form */}
+                    {isAddingHoliday && (
+                      <div className="add-holiday-form">
+                        <h5>Add New Holiday</h5>
+                        <input
+                          type="text"
+                          placeholder="Holiday name"
+                          value={newHoliday.name}
+                          onChange={(e) => setNewHoliday(prev => ({...prev, name: e.target.value}))}
+                          className="holiday-input"
+                        />
+                        <input
+                          type="text"
+                          placeholder="Description (optional)"
+                          value={newHoliday.description}
+                          onChange={(e) => setNewHoliday(prev => ({...prev, description: e.target.value}))}
+                          className="holiday-input"
+                        />
+                        <input
+                          type="date"
+                          value={newHoliday.date}
+                          onChange={(e) => setNewHoliday(prev => ({...prev, date: e.target.value}))}
+                          className="holiday-input"
+                        />
+                        <div className="form-buttons">
+                          <button className="save-btn" onClick={handleSaveHoliday}>Save</button>
+                          <button className="cancel-btn" onClick={handleCancelAddHoliday}>Cancel</button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </>
+              )}
             </div>
 
             {/* Add Holiday Button - Bottom Right */}
-            <div className="modal-actions">
-              {!isAddingHoliday && (
-                <button className="add-holiday-btn" onClick={handleAddHoliday}> Add Holiday </button>
-              )}
-            </div>
+            {!selectedLeaveRequest && (
+              <div className="modal-actions">
+                {!isAddingHoliday && (
+                  <button className="add-holiday-btn" onClick={handleAddHoliday}> Add Holiday </button>
+                )}
+              </div>
+            )}
 
             <button className="modal-close-dashboard" onClick={closeModal}>×</button>
           </div>
