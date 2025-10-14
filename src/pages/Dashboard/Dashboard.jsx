@@ -2,7 +2,11 @@ import React, { useState, useEffect } from 'react'
 import './Dashboard.css'
 import Sidebar from '../../components/Sidebar/Sidebar'
 import useUserProfile from '../../hooks/user/useUserProfile'
-import { useGetLeaveRequests } from '../../hooks/admin/useAdminServices'
+import { 
+  useGetLeaveRequests, 
+  useAddHoliday,
+  useFetchHoliday  // ✅ Added missing import
+} from '../../hooks/admin/useAdminServices'
 
 const Dashboard = () => {
   const [isSidebarActive, setSidebarActive] = useState(false)
@@ -15,22 +19,23 @@ const Dashboard = () => {
   const [currentPage, setCurrentPage] = useState(1)
   const [pageSize, setPageSize] = useState(10)
   
-  const [holidays, setHolidays] = useState([
-    { id: 1, date: '2025-01-01', name: 'New Year\'s Day', description: 'New Year celebration' },
-    { id: 2, date: '2025-12-25', name: 'Christmas Day', description: 'Christmas celebration' },
-    { id: 3, date: '2025-07-04', name: 'Independence Day', description: 'National holiday' }
-  ])
+  // Holiday state
   const [isAddingHoliday, setIsAddingHoliday] = useState(false)
   const [newHoliday, setNewHoliday] = useState({
     name: '',
     description: '',
-    date: ''
+    date: '',
+    type: 'public'
   })
   
   const { userProfile } = useUserProfile()
 
-  // Fetch leave requests with pagination
+  // API Hooks
   const { data: leaveRequestsData, isLoading: isLoadingLeaveRequests, error: leaveRequestsError, refetch } = useGetLeaveRequests(true, currentPage, pageSize)
+  
+  // ✅ Holiday API hooks - properly implemented
+  const { mutateAsync: createHoliday, isLoading: isCreatingHoliday } = useAddHoliday()
+  const { data: holidaysData, isLoading: isLoadingHolidays, error: holidaysError, refetch: refetchHolidays } = useFetchHoliday(true, currentDate.getFullYear(), newHoliday.type)
 
   const monthNames = [
     'January', 'February', 'March', 'April', 'May', 'June',
@@ -69,7 +74,7 @@ const Dashboard = () => {
   const closeModal = () => {
     setIsModalOpen(false);
     setIsAddingHoliday(false);
-    setNewHoliday({ name: '', description: '', date: '' });
+    setNewHoliday({ name: '', description: '', date: '', type: 'public' });
   }
 
   const closeWelcome = () => {
@@ -85,32 +90,64 @@ const Dashboard = () => {
     }
   }
 
-  const handleSaveHoliday = () => {
+  // ✅ Fixed to match API structure
+  const handleSaveHoliday = async () => {
     if (newHoliday.name && newHoliday.date) {
-      const holiday = {
-        id: Date.now(),
-        name: newHoliday.name,
-        description: newHoliday.description,
-        date: newHoliday.date
-      };
-      setHolidays(prev => [...prev, holiday]);
-      setIsAddingHoliday(false);
-      setNewHoliday({ name: '', description: '', date: '' });
+      try {
+        await createHoliday({
+          name: newHoliday.name,
+          holidate: newHoliday.date, // ✅ Using 'holidate' to match API
+          description: newHoliday.description,
+          type: newHoliday.type,
+          createdBy: userProfile?._id || userProfile?.id
+        });
+        
+        // Refetch holidays to get updated list
+        await refetchHolidays();
+        
+        // Reset form
+        setIsAddingHoliday(false);
+        setNewHoliday({ name: '', description: '', date: '', type: 'public' });
+        
+        // Show success message (optional)
+        alert('Holiday created successfully!');
+        
+      } catch (error) {
+        console.error('Error creating holiday:', error);
+        alert('Failed to create holiday. Please try again.');
+      }
+    } else {
+      alert('Please fill in the holiday name and date.');
     }
   }
 
   const handleCancelAddHoliday = () => {
     setIsAddingHoliday(false);
-    setNewHoliday({ name: '', description: '', date: '' });
+    setNewHoliday({ name: '', description: '', date: '', type: 'public' });
   }
 
-  const handleDeleteHoliday = (holidayId) => {
-    setHolidays(prev => prev.filter(holiday => holiday.id !== holidayId));
+  // ✅ Note: Delete functionality would need a new API endpoint
+  const handleDeleteHoliday = async (holidayId) => {
+    if (window.confirm('Are you sure you want to delete this holiday?')) {
+      try {
+        // ✅ This would require implementing a delete holiday API endpoint
+        console.log('Delete holiday functionality needs to be implemented in the backend');
+        alert('Delete functionality is not yet implemented in the backend.');
+        
+      } catch (error) {
+        console.error('Error deleting holiday:', error);
+        alert('Failed to delete holiday. Please try again.');
+      }
+    }
   }
 
+  // ✅ Fixed to use correct data structure
   const getHolidaysForDate = (date) => {
     const dateString = date.toISOString().split('T')[0];
-    return holidays.filter(holiday => holiday.date === dateString);
+    return holidaysData?.holidays?.filter(holiday => {
+      const holidayDate = new Date(holiday.holidate || holiday.date).toISOString().split('T')[0];
+      return holidayDate === dateString;
+    }) || [];
   }
 
   const isHoliday = (date) => {
@@ -138,6 +175,7 @@ const Dashboard = () => {
       case 'approved':
         return 'status-approved'
       case 'rejected':
+      case 'declined': // ✅ Added declined status
         return 'status-rejected'
       default:
         return 'status-default'
@@ -279,7 +317,13 @@ const Dashboard = () => {
                   ))}
                 </tr>
               </thead>
-              <tbody id="calendarBody">{renderCalendar()}</tbody>
+              <tbody id="calendarBody">
+                {isLoadingHolidays ? (
+                  <tr><td colSpan="7" style={{textAlign: 'center', padding: '20px'}}>Loading holidays...</td></tr>
+                ) : (
+                  renderCalendar()
+                )}
+              </tbody>
             </table>
           </div>
 
@@ -317,7 +361,7 @@ const Dashboard = () => {
                 <>
                   <div className="leave-requests-list">
                     {leaveRequestsData.leaves.map((request) => (
-                      <div key={request._id} className="leave-request-item">
+                      <div key={request.id || request._id} className="leave-request-item">
                         <div className="request-info">
                           <div className="request-header">
                             <h4>{request.employeeName}</h4>
@@ -410,17 +454,28 @@ const Dashboard = () => {
               <div className="holiday-container">
                 <h4>Holidays for this date</h4>
                 <div className="holiday-list">
-                  {getHolidaysForDate(selectedDate || new Date()).length > 0 ? (
+                  {isLoadingHolidays ? (
+                    <p>Loading holidays...</p>
+                  ) : holidaysError ? (
+                    <div className="error-container">
+                      <p>Error loading holidays: {holidaysError.message}</p>
+                      <button onClick={() => refetchHolidays()} className="retry-btn">
+                        Retry
+                      </button>
+                    </div>
+                  ) : getHolidaysForDate(selectedDate || new Date()).length > 0 ? (
                     getHolidaysForDate(selectedDate || new Date()).map(holiday => (
-                      <div key={holiday.id} className="holiday-item">
+                      <div key={holiday.id || holiday._id} className="holiday-item">
                         <div className="holiday-info">
                           <h5>{holiday.name}</h5>
                           <p>{holiday.description}</p>
+                          <small>Type: {holiday.type}</small>
                         </div>
                         <button 
                           className="delete-holiday-btn"
-                          onClick={() => handleDeleteHoliday(holiday.id)}
-                          title="Delete Holiday"> 🗑️</button>
+                          onClick={() => handleDeleteHoliday(holiday.id || holiday._id)}
+                          title="Delete Holiday"
+                        > 🗑️</button>
                       </div>
                     ))
                   ) : (
@@ -438,6 +493,7 @@ const Dashboard = () => {
                       value={newHoliday.name}
                       onChange={(e) => setNewHoliday(prev => ({...prev, name: e.target.value}))}
                       className="holiday-input"
+                      disabled={isCreatingHoliday}
                     />
                     <input
                       type="text"
@@ -445,16 +501,40 @@ const Dashboard = () => {
                       value={newHoliday.description}
                       onChange={(e) => setNewHoliday(prev => ({...prev, description: e.target.value}))}
                       className="holiday-input"
+                      disabled={isCreatingHoliday}
                     />
                     <input
                       type="date"
                       value={newHoliday.date}
                       onChange={(e) => setNewHoliday(prev => ({...prev, date: e.target.value}))}
                       className="holiday-input"
+                      disabled={isCreatingHoliday}
                     />
+                    <select
+                      value={newHoliday.type}
+                      onChange={(e) => setNewHoliday(prev => ({...prev, type: e.target.value}))}
+                      className="holiday-input"
+                      disabled={isCreatingHoliday}
+                    >
+                      <option value="public">Public Holiday</option>
+                      <option value="company">Company Holiday</option>
+                      <option value="regional">Regional Holiday</option>
+                    </select>
                     <div className="form-buttons">
-                      <button className="save-btn" onClick={handleSaveHoliday}>Save</button>
-                      <button className="cancel-btn" onClick={handleCancelAddHoliday}>Cancel</button>
+                      <button 
+                        className="save-btn" 
+                        onClick={handleSaveHoliday}
+                        disabled={isCreatingHoliday}
+                      >
+                        {isCreatingHoliday ? 'Saving...' : 'Save'}
+                      </button>
+                      <button 
+                        className="cancel-btn" 
+                        onClick={handleCancelAddHoliday}
+                        disabled={isCreatingHoliday}
+                      >
+                        Cancel
+                      </button>
                     </div>
                   </div>
                 )}
@@ -475,6 +555,5 @@ const Dashboard = () => {
     </div>
   )
 }
-
 
 export default Dashboard
