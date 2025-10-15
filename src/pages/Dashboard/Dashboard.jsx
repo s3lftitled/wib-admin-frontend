@@ -444,7 +444,7 @@ const Dashboard = () => {
                       <div className="detail-group">
                         {selectedLeaveRequest.reason && (
                           <div className="detail-item reason-item">
-                            <span className="detail-label">💬 Reason:</span>
+                            <span className="detail-label">Reason:</span>
                             <div className="reason-text">{selectedLeaveRequest.reason}</div>
                           </div>
                         )}

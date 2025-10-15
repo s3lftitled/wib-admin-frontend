@@ -466,6 +466,8 @@
   display: flex;
   flex-direction: column;
   gap: 16px;
+  max-height: 700px;
+  overflow-y: auto;
 }
 
 .leave-request-item {
@@ -636,6 +638,8 @@
   min-width: 140px;
   font-size: 0.9rem;
   flex-shrink: 0;
+  padding-left: 10px;
+  text-align: start;
 }
 
 .detail-value {
@@ -665,24 +669,23 @@
 .reason-item,
 .decline-item {
   flex-direction: column;
-  align-items: stretch;
+  align-items: start;
 }
 
 .reason-text,
 .decline-text {
   background: white;
-  border: 1px solid #e2e8f0;
-  border-radius: 8px;
-  padding: 12px;
-  margin-top: 8px;
+  padding: 10px;
+  margin: 5px;
   line-height: 1.6;
   color: #4a5568;
   font-style: italic;
   position: relative;
+  padding-left: 40px;
+  
 }
 
 .reason-text:before {
-  content: '"';
   position: absolute;
   top: -5px;
   left: 8px;
