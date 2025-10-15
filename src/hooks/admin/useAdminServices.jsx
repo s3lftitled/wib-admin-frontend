@@ -25,3 +25,25 @@ export const useGetLeaveRequests = (enabled = true, page = 1, pageSize = 10) => 
     }
   )
 }
+
+export const useCreateDepartment = (enabled = true) => {
+  return useApiMutation(
+    'post',
+    ({ departmentName, createdBy}) => ({
+      endpoint: `/api/admin/v1/create-new-department/${createdBy}`,
+      data: { departmentName }
+    }),
+  )
+}
+
+export const useFetchDepartments = (enabled = true) => {
+  return useApiQuery(
+    ['departments'],
+    '/api/admin/v1/fetch-departments',
+    {
+      enabled,
+      staleTime: 5 * 60 * 1000, // 5 minutes
+      cacheTime: 10 * 60 * 1000, // 10 minutes
+    }
+  )
+}
