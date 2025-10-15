@@ -29,7 +29,6 @@ const Dashboard = () => {
   })
 
   const { userProfile } = useUserProfile()
-
   // Fetch leave requests with pagination
   const { data: leaveRequestsData, isLoading: isLoadingLeaveRequests, error: leaveRequestsError, refetch } = useGetLeaveRequests(true, currentPage, pageSize)
 
