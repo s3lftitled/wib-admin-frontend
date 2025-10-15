@@ -47,3 +47,25 @@ export const useFetchDepartments = (enabled = true) => {
     }
   )
 }
+
+export const useAddHoliday = () => {
+  return useApiMutation(
+    'post',
+    ({ name, holidate, description, type, createdBy }) => ({
+      endpoint: `/api/admin/v1/add-holiday/${createdBy}`,
+      data: { name, holidate, description, type }
+    }),
+  )
+}
+
+export const useFetchHoliday = (enabled = true, year, type) => {
+  return useApiQuery(
+    ['holidays', 'count', year, type],
+    `/api/admin/v1/fetch-all-holidays?year=${year}&type=${type}`,
+    {
+      enabled,
+      staleTime: 5 * 60 * 1000, // 5 minutes
+      cacheTime: 10 * 60 * 1000, // 10 minutes
+    }
+  )
+}
