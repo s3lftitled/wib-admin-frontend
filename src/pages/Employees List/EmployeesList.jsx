@@ -14,6 +14,9 @@ const EmployeesList = () => {
   const [newTotalLeaves, setNewTotalLeaves] = useState('')
   const [saveStatus, setSaveStatus] = useState('') // '', 'saving', 'success', 'error'
   const [employeeLeaves, setEmployeeLeaves] = useState({}) // Store custom leave allocations
+  const [newEmployeeName, setNewEmployeeName] = useState('')
+  const [newEmployeeEmail, setNewEmployeeEmail] = useState('')
+  const [newEmployeeDepartment, setNewEmployeeDepartment] = useState('')
 
   const { data, isLoading, error, refetch } = useGetEmployees()
 
@@ -174,6 +177,16 @@ const EmployeesList = () => {
     }
   }, [selectedEmployee])
 
+  const handleAddEmployeeSubmit = () => {
+    // For now, just log the values and close modal
+    console.log('New Employee:', { name: newEmployeeName, email: newEmployeeEmail, department: newEmployeeDepartment })
+    setIsModalOpen(false)
+    // Reset states
+    setNewEmployeeName('')
+    setNewEmployeeEmail('')
+    setNewEmployeeDepartment('')
+  }
+
   if (error) {
     return (
       <>
@@ -228,9 +241,7 @@ const EmployeesList = () => {
                 className="add-employee-btn"
                 onClick={handleAddEmployee}
                 aria-label="Add new employee"
-              >
-                + Add Employee
-              </button>
+              > + Add Employee </button>
             </div>
           )}
 
@@ -284,7 +295,7 @@ const EmployeesList = () => {
         </div>
       </div>
 
-      {/* Add Employee Modal */}
+      {/* Enhanced Add Employee Modal */}
       {isModalOpen && (
         <div
           className="modal-overlay"
@@ -294,16 +305,74 @@ const EmployeesList = () => {
           aria-labelledby="modal-title"
         >
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <button
-              className="modal-close"
-              onClick={closeModal}
-              aria-label="Close modal"
-            >
-              ×
-            </button>
-            <h2 id="modal-title">Add New Employee</h2>
-            <div className="placeholder-message-title">
-              <p>Employee creation functionality will be implemented here...</p>
+            {/* Modal Header */}
+            <div className="modal-header">
+              <button
+                className="modal-close"
+                onClick={closeModal}
+                aria-label="Close modal"
+              >
+                ×
+              </button>
+              <h2 id="modal-title" className="modal-title">
+                Add New Employee
+              </h2>
+              <p className="modal-subtitle">
+                Fill in the details below to add a new team member
+              </p>
+            </div>
+
+            {/* Modal Body */}
+            <div className="modal-body">
+              <div className="new-hired-employee">
+                <div className="input-group" data-field="name">
+                  <label htmlFor="name">Full Name</label>
+                  <input
+                    type="text"
+                    id="name"
+                    value={newEmployeeName}
+                    onChange={(e) => setNewEmployeeName(e.target.value)}
+                    placeholder="Enter employee's full name"
+                    required
+                  />
+                </div>
+
+                <div className="input-group" data-field="email">
+                  <label htmlFor="email">Email Address</label>
+                  <input
+                    type="email"
+                    id="email"
+                    value={newEmployeeEmail}
+                    onChange={(e) => setNewEmployeeEmail(e.target.value)}
+                    placeholder="Enter employee's email"
+                    required
+                  />
+                </div>
+
+                <div className="input-group" data-field="department">
+                  <label htmlFor="department">Department</label>
+                  <input
+                    type="text"
+                    id="department"
+                    value={newEmployeeDepartment}
+                    onChange={(e) => setNewEmployeeDepartment(e.target.value)}
+                    placeholder="Enter department name"
+                    required
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Modal Footer */}
+            <div className="modal-footer">
+              <button
+                className="add-employee-submit-btn"
+                onClick={handleAddEmployeeSubmit}
+                disabled={!newEmployeeName || !newEmployeeEmail || !newEmployeeDepartment}
+                type="submit"
+              >
+                Add Employee
+              </button>
             </div>
           </div>
         </div>
